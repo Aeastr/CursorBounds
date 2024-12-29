@@ -22,7 +22,7 @@ To include `CaretPositioner` in your project:
 2. Go to **File > Add Packages...**.
 3. Paste the following URL in the search bar:
    ```
-   https://github.com/yourusername/CaretPositioner.git
+   https://github.com/aeastr/CaretPositioner.git
    ```
 4. Choose the desired version and click **Add Package**.
 
