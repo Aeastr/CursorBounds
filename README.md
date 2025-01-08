@@ -1,5 +1,9 @@
-
-# **CursorBounds**
+<div align="center">
+  <img width="300" height="300" src="/assets/icon.png" alt="Logo">
+  <h1><b>CursorBounds</b></h1>
+  <p>Precise information about the position and bounds of the text cursor (caret)<br>
+  <i>Compatible with macOS 12.0 and later</i></p>
+</div>
 
 **CursorBounds** is a Swift package that provides precise information about the position and bounds of the text cursor (caret) in macOS applications. It leverages the macOS Accessibility API to retrieve the caret's location and bounding rectangle, making it ideal for accessibility tools, text navigation, and UI enhancements.
 
