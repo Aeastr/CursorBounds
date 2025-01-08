@@ -7,6 +7,21 @@
 
 ---
 
+## **Positioning**
+
+| ![Example of a cursor caret](assets/caretExample.png) | ![Bounding rectangle of a focused text area](assets/textAreaExample.png) | ![Fallback method using cursor position](assets/fallbackExample.png) |
+|:-----------------------------:|:-----------------------------:|:-----------------------------:|
+| **Cursor Caret**                 | **Text Field/Area**               | **Cursor**             |
+| Identifies the cursor caret, the blinking indicator that shows where text will be inserted. | Determines the bounding rectangle of the currently focused text area or input field. | Uses the screen position of the cursor if other methods are unavailable. |
+| Works reliably in most text input scenarios. | Provides a general area when caret data is not accessible. | Acts as a backup to ensure the cursor's position is still available. |
+| Preferred method for accuracy. | Handles cases where a text field is active but caret data cannot be retrieved. | Ensures functionality when no other data is accessible. |
+
+CursorBounds primarily finds the cursor caret, _the blinking line or block that indicates where the next character will appear when typing_. 
+If the caret's position cannot be retrieved, it falls back to the bounding rectangle of the focused text area or field. 
+When neither the caret nor the bounding rectangle is accessible, it uses the position of the mouse cursor as a final fallback.
+
+---
+
 ## **Features**
 - Retrieve the position of the text caret (cursor) in macOS apps.
 - Get the bounding rectangle of the caret for text fields and text areas.
