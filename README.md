@@ -27,6 +27,7 @@ When neither the caret nor the bounding rectangle is accessible, it uses the pos
 - Get the bounding rectangle of the caret for text fields and text areas.
 - Graceful handling of unsupported or restricted applications.
 - Built-in fallback mechanisms for robust behavior.
+- Error logging and levels (see below, or check documentation)
 
 ---
 
