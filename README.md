@@ -56,7 +56,26 @@ To retrieve the current origin, call the `getOrigin` method:
 let origin = CursorBounds().getOrigin()
 ```
 
-### **Example Usage**
+The getOrigin method accepts the following parameters:
+1. correctionMode (default: .adjustForYAxis):
+- Determines whether to apply a Y-axis correction to account for screen coordinate differences between CGPoint and NSPoint.
+- Options:
+  - .none: No correction is applied.
+  - .adjustForYAxis: Adjusts the Y-coordinate to align with the screen’s coordinate system.
+  
+2. xCorner (default: .minX):
+- Specifies which X-coordinate of the bounding box to use.
+- Options:
+  - .minX: Use the minimum X-coordinate.
+  - .maxX: Use the maximum X-coordinate.
+  
+3. yCorner (default: .minY):
+- Specifies which Y-coordinate of the bounding box to use.
+- Options:
+  - .minY: Use the minimum Y-coordinate.
+  - .maxY: Use the maximum Y-coordinate.
+
+### **Default Behavior**
 
 ```swift
 if let origin = CursorBounds().getOrigin() {
@@ -65,6 +84,26 @@ if let origin = CursorBounds().getOrigin() {
     print("Origin Coordinates: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
 } else {
     print("Failed to retrieve origin.")
+}
+```
+
+### **Customized Behavior**
+
+```swift
+if let origin = CursorBounds().getOrigin(correctionMode: .none) {
+print("Origin Coordinates without Y-axis correction: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
+}
+```
+
+```swift
+if let origin = CursorBounds().getOrigin(xCorner: .maxX, yCorner: .maxY) {
+print("Top-right corner coordinates: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
+}
+```
+
+```swift
+if let origin = CursorBounds().getOrigin(correctionMode: .none, xCorner: .maxX, yCorner: .minY) {
+print("Ucorrected bottom-right corner coordinates: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
 }
 ```
 
