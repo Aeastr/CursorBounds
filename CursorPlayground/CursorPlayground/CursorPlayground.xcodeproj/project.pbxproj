@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2D63F55A2D2F07D500BBE284 /* CursorBounds in Frameworks */ = {isa = PBXBuildFile; productRef = 2D63F5592D2F07D500BBE284 /* CursorBounds */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		2D141E0A2D2F05900011EFD4 /* CursorPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CursorPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D63F55A2D2F07D500BBE284 /* CursorBounds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = CursorPlayground;
 			packageProductDependencies = (
+				2D63F5592D2F07D500BBE284 /* CursorBounds */,
 			);
 			productName = CursorPlayground;
 			productReference = 2D141E0A2D2F05900011EFD4 /* CursorPlayground.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 2D141E012D2F05900011EFD4;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2D63F5582D2F07D500BBE284 /* XCLocalSwiftPackageReference "../../../CursorBounds" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2D141E0B2D2F05900011EFD4 /* Products */;
 			projectDirPath = "";
@@ -319,6 +328,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		2D63F5582D2F07D500BBE284 /* XCLocalSwiftPackageReference "../../../CursorBounds" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../CursorBounds;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2D63F5592D2F07D500BBE284 /* CursorBounds */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CursorBounds;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2D141E022D2F05900011EFD4 /* Project object */;
 }
