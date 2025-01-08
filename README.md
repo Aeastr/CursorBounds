@@ -58,6 +58,12 @@ add ltr
 
 ---
 
+## Playground
+
+[CursorPlayground](CursorPlayground) is included in this package, you can quickly test out the main function of CursorBounds here
+
+---
+
 ## **Requirements**
 - **macOS 12.0+**
 - **Swift 5.5+**
