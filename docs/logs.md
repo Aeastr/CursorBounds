@@ -5,7 +5,8 @@ This document outlines the log types used in the project, categorized by **OSLog
 
 By default, log level is `.error`, you can set this when calling `CursorBounds()`
 
-swift```
+
+```swift
 CursorBounds(logLevel: .debug)
 ```
 
@@ -81,6 +82,4 @@ CursorBounds(logLevel: .debug)
 
 ## Logging Behavior
 
-The logging function adheres to a threshold defined by `currentLogLevel`, ensuring only logs meeting or exceeding the set level are printed. Each log type uses the appropriate `OSLogLevel` and is formatted with an icon for clarity.
-
-This setup provides structured, concise, and actionable logging to streamline development and debugging processes.
+The logging function adheres to a threshold defined by the current log level, ensuring only logs meeting or exceeding the set level are printed. Each log type uses the appropriate `OSLogLevel` and is formatted with an icon for clarity.
