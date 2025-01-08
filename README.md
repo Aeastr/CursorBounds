@@ -1,7 +1,7 @@
 
-# **CaretPositioner**
+# **CursorBounds**
 
-**CaretPositioner** is a Swift package that provides precise information about the position and bounds of the text cursor (caret) in macOS applications. It leverages the macOS Accessibility API to retrieve the caret's location and bounding rectangle, making it ideal for accessibility tools, text navigation, and UI enhancements.
+**CursorBounds** is a Swift package that provides precise information about the position and bounds of the text cursor (caret) in macOS applications. It leverages the macOS Accessibility API to retrieve the caret's location and bounding rectangle, making it ideal for accessibility tools, text navigation, and UI enhancements.
 
 ---
 
@@ -16,13 +16,13 @@
 ## **Installation**
 
 ### **Swift Package Manager**
-To include `CaretPositioner` in your project:
+To include `CursorBounds` in your project:
 
 1. Open your Xcode project.
 2. Go to **File > Add Packages...**.
 3. Paste the following URL in the search bar:
    ```
-   https://github.com/aeastr/CaretPositioner.git
+   https://github.com/aeastr/CursorBounds.git
    ```
 4. Choose the desired version and click **Add Package**.
 
@@ -43,14 +43,14 @@ add ltr
 ## **Requirements**
 - **macOS 12.0+**
 - **Swift 5.5+**
-- Accessibility permissions must be granted to the app.
+- **Accessibility permissions must be granted to the app.**
 - **App Sanbox must be disabled**
 
 ---
 
 ## **Permissions**
 
-To enable this package, your app must have **Accessibility permissions**. This can be configured in **System Preferences > Privacy & Security > Accessibility**. Ensure that your app is checked in the list of allowed apps.
+To use this package, your app must have **Accessibility permissions**, and **App Sanbox must be disabled**. **Accessibility permissions** can be configured in **System Preferences > Privacy & Security > Accessibility**. Ensure that your app is checked in the list of allowed apps.
 
 ---
 
