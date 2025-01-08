@@ -3,11 +3,11 @@
 
 This document outlines the log types used in the project, categorized by **OSLogLevel** and their intended purposes.
 
-By default, log level is `.error`, you can set this when calling `CursorBounds()`
+By default, log level is `.error`, you can set this with `CursorBoundsConfig`
 
 
 ```swift
-CursorBounds(logLevel: .debug)
+CursorBoundsConfig.shared.logLevel = .debug
 ```
 
 ---
