@@ -59,8 +59,6 @@ let origin = CursorBounds().getOrigin()
 ### **Example Usage**
 
 ```swift
-CursorBoundsConfig.shared.logLevel = .debug // Enable debug-level logging
-
 if let origin = CursorBounds().getOrigin() {
     print("Origin ID: \(origin.id)")
     print("Origin Type: \(origin.type.rawValue)")
@@ -104,7 +102,7 @@ public enum OriginType: String {
 
 ### **Setting the Debug Level**
 
-You can control the verbosity of the logs by setting the `logLevel` in `CursorBoundsConfig`. For example, to enable debug-level logging:
+You can control the verbosity of the logs by setting the `logLevel` in `CursorBoundsConfig`. [View log documentation](docs/logs.md) For example, to enable debug-level logging:
 
 ```swift
 CursorBoundsConfig.shared.logLevel = .debug
