@@ -46,15 +46,76 @@ To include `CursorBounds` in your project:
 
 ---
 
-## **Usage**
+## **Main Usage**
 
-add ltr
+### **Getting the Origin**
 
----
+To retrieve the current origin, call the `getOrigin` method:
 
-## **Key Methods**
+```swift
+let origin = CursorBounds().getOrigin()
+```
 
-add ltr
+### **Example Usage**
+
+```swift
+CursorBoundsConfig.shared.logLevel = .debug // Enable debug-level logging
+
+if let origin = CursorBounds().getOrigin() {
+    print("Origin ID: \(origin.id)")
+    print("Origin Type: \(origin.type.rawValue)")
+    print("Origin Coordinates: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
+} else {
+    print("Failed to retrieve origin.")
+}
+```
+
+#### **What `getOrigin` Returns**
+
+The `getOrigin` method returns an optional `Origin` object (`Origin?`). If successful, you’ll receive an `Origin` with the following structure:
+
+```swift
+public struct Origin: Hashable {
+    public private(set) var id: UUID
+    public var type: OriginType
+    public var NSPoint: NSPoint
+
+    public init(id: UUID = UUID(), type: OriginType, NSPoint: NSPoint) {
+        self.id = id
+        self.type = type
+        self.NSPoint = NSPoint
+    }
+}
+```
+
+NSPoint in `Origin` represents the calculated location of the top left point of the rect
+
+#### **Understanding `OriginType`**
+
+The `type` property of `Origin` indicates the source of the origin. It is an enum with the following cases:
+
+```swift
+public enum OriginType: String {
+    case caret = "Caret"             // Represents a caret position
+    case rect = "Text Rect"          // Represents a text field/area bounding rect
+    case mouseCursor = "Mouse Cursor" // Represents the mouse cursor position
+}
+```
+
+### **Setting the Debug Level**
+
+You can control the verbosity of the logs by setting the `logLevel` in `CursorBoundsConfig`. For example, to enable debug-level logging:
+
+```swift
+CursorBoundsConfig.shared.logLevel = .debug
+```
+
+The available log levels include:
+- `.debug`: For detailed information useful during development.
+- `.info`: For general informational logs.
+- `.warning`: For recoverable issues.
+- `.error`: For critical errors.
+- `.none`: No logs at all.
 
 ---
 
