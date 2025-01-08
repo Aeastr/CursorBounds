@@ -13,7 +13,7 @@ struct CaptureTimerView: View {
     @Binding var timerInterval: Double
     var startTimer: () -> Void
     var stopTimer: () -> Void
-
+    
     var body: some View {
         HStack(spacing: 20) {
             VStack(spacing: 20) {
@@ -35,7 +35,7 @@ struct CaptureTimerView: View {
                 .cornerRadius(10)
             }
             .frame(maxHeight: .infinity, alignment: .top)
-
+            
             // Captured origins
             VStack(alignment: .leading) {
                 HStack {
@@ -47,9 +47,16 @@ struct CaptureTimerView: View {
                             startTimer()
                         }
                         .buttonStyle(.borderedProminent)
-
+                        
                         Button("Stop") {
                             stopTimer()
+                        }
+                        .buttonStyle(.bordered)
+                        
+                        Spacer()
+                        
+                        Button("Clear") {
+                            capturedOrigins = []
                         }
                         .buttonStyle(.bordered)
                     }
@@ -57,7 +64,7 @@ struct CaptureTimerView: View {
                 
                 scrollSection()
             }
-            .frame(maxWidth: .infinity)
+            
         }
     }
     
@@ -67,17 +74,24 @@ struct CaptureTimerView: View {
             ScrollView {
                 ForEach(capturedOrigins, id: \.self) { origin in
                     VStack(alignment: .leading) {
-                        Text("Type: \(origin.type.rawValue)")
+                        Text("\(origin.type.rawValue)")
+                            .font(.title3.weight(.semibold))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text("x: \(origin.NSPoint.x), y: \(origin.NSPoint.y)")
                             .font(.body)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .padding(5)
+                    .background(Color.gray.opacity(0.1))
+                    .clipShape(.rect(cornerRadius: 6))
+                    
                     .id(origin.id) // Assign a unique ID for each item
                 }
             }
+            .frame(maxWidth: .infinity)
+            .safeAreaPadding(4)
             .background(Color.gray.opacity(0.1))
-            .cornerRadius(10)
+            .clipShape(.rect(cornerRadius: 10))
             .onChange(of: capturedOrigins) { _ in
                 // Scroll to the last item when the list changes
                 if let lastItem = capturedOrigins.last {
