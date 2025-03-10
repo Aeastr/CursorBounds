@@ -166,13 +166,13 @@ The available log levels include:
 - **macOS 12.0+**
 - **Swift 5.5+**
 - **Accessibility permissions must be granted to the app.**
-- **App Sanbox must be disabled**
+- **App Sandbox must be disabled**
 
 ---
 
 ## **Permissions**
 
-To use this package, your app must have **Accessibility permissions**, and **App Sanbox must be disabled**. **Accessibility permissions** can be configured in **System Preferences > Privacy & Security > Accessibility**. Ensure that your app is checked in the list of allowed apps.
+To use this package, your app must have **Accessibility permissions**, and **App Sandbox must be disabled**. **Accessibility permissions** can be configured in **System Preferences > Privacy & Security > Accessibility**. Ensure that your app is checked in the list of allowed apps.
 
 ---
 
