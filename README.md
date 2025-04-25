@@ -7,6 +7,14 @@
 
 ---
 
+## **Requirements**
+- **macOS 12.0+**
+- **Swift 5.5+**
+- **Accessibility permissions must be granted to the app.**
+- **App Sandbox must be disabled**
+
+---
+
 ## **Positioning**
 
 | ![Example of a cursor caret](assets/caretExample.png) | ![Bounding rectangle of a focused text area](assets/textAreaExample.png) | ![Fallback method using cursor position](assets/fallbackExample.png) |
@@ -162,32 +170,34 @@ The available log levels include:
 
 ---
 
-## **Requirements**
-- **macOS 12.0+**
-- **Swift 5.5+**
-- **Accessibility permissions must be granted to the app.**
-- **App Sandbox must be disabled**
-
----
-
 ## **Permissions**
 
 To use this package, your app must have **Accessibility permissions**, and **App Sandbox must be disabled**. **Accessibility permissions** can be configured in **System Preferences > Privacy & Security > Accessibility**. Ensure that your app is checked in the list of allowed apps.
 
 ---
 
-## **License**
-This project is licensed under the [MIT License](LICENSE).
+## License
+
+This project is released under the MIT License. See [LICENSE](LICENSE.md) for details.
+
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request!
+
+## Support
+
+If you like this project, please consider giving it a ⭐️
 
 ---
 
-## **Contributing**
-
-Contributions are welcome! Please fork this repository and submit a pull request for review.
+## Where to find me:  
+- here, obviously.  
+- [Twitter](https://x.com/AetherAurelia)  
+- [Threads](https://www.threads.net/@aetheraurelia)  
+- [Bluesky](https://bsky.app/profile/aethers.world)  
+- [LinkedIn](https://www.linkedin.com/in/willjones24)
 
 ---
 
-## **Acknowledgments**
-
-- Built with the macOS Accessibility API for seamless integration.
-- Inspired by the need for better tools to enhance text navigation and accessibility in macOS apps.
+<p align="center">Built with 🍏🖱️🔲 by Aether</p>
