@@ -11,7 +11,9 @@
 - **macOS 12.0+**
 - **Swift 5.5+**
 - **Accessibility permissions must be granted to the app.**
-- **App Sandbox must be disabled**
+- **App Sandbox must be disabled** (if you want to use this *outside* of your own app. 
+
+**NOTICE:** This repository is currently outdated. A rework is underway to bring it up-to-date and introduce new features.
 
 ---
 
