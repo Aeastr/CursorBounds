@@ -42,7 +42,7 @@ When neither the caret nor the bounding rectangle is accessible, it uses the pos
 - Coordinate system correction for macOS vs iOS-style coordinates
 - Convenience methods for common use cases
 
-## **Requirements**
+## **Requirements Notice**
 
 ### **Accessibility Permissions**
 **Required:** Accessibility permissions must be granted to use this package. The system will prompt users to grant these permissions.
@@ -195,20 +195,6 @@ public enum CursorType {
     case textCaret      // Precise text cursor position
     case textField      // Text field bounding area
     case mouseFallback  // Mouse cursor position (fallback)
-}
-```
-
-### **Accessibility Permissions**
-
-**Accessibility permissions** are always required. You can check and request them programmatically:
-
-```swift
-// Check if permissions are granted
-if CursorBounds.isAccessibilityEnabled() {
-    // Ready to use CursorBounds
-} else {
-    // Request permissions (opens System Preferences)
-    CursorBounds.requestAccessibilityPermissions()
 }
 ```
 
