@@ -69,6 +69,26 @@ To include `CursorBounds` in your project:
 
 ---
 
+## Playground
+
+[CursorPlayground](CursorPlayground) is a bundled macOS demo app that lets you explore CursorBounds in action.
+
+### Current Origin Example
+
+![Current Origin Demo](assets/Playground%20CurrentOrigin.png)
+
+The **Current Origin** tab continuously displays the live caret position (or the best fallback) and lets you monitor changes in real-time.
+
+### Capture Timer Example
+
+![Capture Timer Demo](assets/Playground%20CaptureTimer.png)
+
+The **Capture Timer** tab records cursor positions at a configurable interval, useful for sampling cursor movement over time.
+
+Open the Xcode workspace, select the `CursorPlayground` target, and press **Run** to try it out.
+
+---
+
 ## **Usage**
 
 ### **Basic Usage**
@@ -178,15 +198,7 @@ public enum CursorType {
 }
 ```
 
----
-
-## Playground
-
-[CursorPlayground](CursorPlayground) is included in this package, you can quickly test out the main function of CursorBounds here
-
----
-
-## **Permissions**
+### **Accessibility Permissions**
 
 **Accessibility permissions** are always required. You can check and request them programmatically:
 
@@ -199,8 +211,6 @@ if CursorBounds.isAccessibilityEnabled() {
     CursorBounds.requestAccessibilityPermissions()
 }
 ```
-
-**App Sandbox** only needs to be disabled if you want to track cursors in other applications. For most use cases (tracking cursors within your own app), App Sandbox can remain enabled.
 
 ---
 
