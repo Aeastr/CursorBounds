@@ -1,19 +1,21 @@
 <div align="center">
-  <img width="300" height="300" src="/assets/icon.png" alt="Logo">
+  <img width="270" height="270" src="/assets/icon.png" alt="Ibeam selecting text 'relia' against a mint green background">
   <h1><b>CursorBounds</b></h1>
   <p>Swift package that provides precise information about the position and bounds of the text cursor (caret) in macOS applications. It leverages the macOS Accessibility API to retrieve the caret's location and bounding rectangle, with fallbacks<br>
   <i>Compatible with macOS 12.0 and later</i></p>
 </div>
 
----
-
-## **Requirements**
-- **macOS 12.0+**
-- **Swift 5.5+**
-- **Accessibility permissions must be granted to the app.**
-- **App Sandbox must be disabled** (if you want to use this *outside* of your own app. 
-
-**NOTICE:** This repository is currently outdated. A rework is underway to bring it up-to-date and introduce new features.
+<div align="center">
+  <a href="https://swift.org">
+    <img src="https://img.shields.io/badge/Swift-5.5-orange.svg" alt="Swift Version">
+  </a>
+  <a href="https://www.apple.com/ios/">
+    <img src="https://img.shields.io/badge/macOS-12.0%2B-blue.svg" alt="macOS 12.0+">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
+  </a>
+</div>
 
 ---
 
@@ -33,11 +35,23 @@ When neither the caret nor the bounding rectangle is accessible, it uses the pos
 ---
 
 ## **Features**
-- Retrieve the position of the text caret (cursor) in macOS apps.
-- Get the bounding rectangle of the caret for text fields and text areas.
-- Graceful handling of unsupported or restricted applications.
-- Built-in fallback mechanisms for robust behavior.
-- Error logging and levels (see below, or check documentation)
+- Swift-native API with proper error handling using `throws`
+- Retrieve the position of the text caret (cursor) in macOS apps
+- Get the bounding rectangle of the caret for text fields and text areas
+- Three-tier fallback system: Text Caret → Text Field Bounds → Mouse Cursor
+- Built-in accessibility permission management
+- Coordinate system correction for macOS vs iOS-style coordinates
+- Convenience methods for common use cases
+
+## **Requirements**
+
+### **Accessibility Permissions**
+**Required:** Accessibility permissions must be granted to use this package. The system will prompt users to grant these permissions.
+
+### **App Sandbox**
+**Internal** App Sandbox can remain enabled when tracking cursors within your own application.
+
+**External** App Sandbox must be disabled **only** if you need to track cursors in *other* applications (external apps).
 
 ---
 
@@ -50,119 +64,120 @@ To include `CursorBounds` in your project:
 2. Go to **File > Add Packages...**.
 3. Paste the following URL in the search bar:
    ```
-   https://github.com/aeastr/CursorBounds.git
+   https://github.com/aeastr/CursorBounds.git/
    ```
 4. Choose the desired version and click **Add Package**.
 
 ---
 
-## **Main Usage**
+## **Usage**
 
-### **Getting the Origin**
-
-To retrieve the current origin, call the `getOrigin` method:
+### **Basic Usage**
 
 ```swift
-let origin = CursorBounds().getOrigin()
-```
+import CursorBounds
 
-The getOrigin method accepts the following parameters:
-1. correctionMode (default: .adjustForYAxis):
-- Determines whether to apply a Y-axis correction to account for screen coordinate differences between CGPoint and NSPoint.
-- Options:
-  - .none: No correction is applied.
-  - .adjustForYAxis: Adjusts the Y-coordinate to align with the screen’s coordinate system.
-  
-2. xCorner (default: .minX):
-- Specifies which X-coordinate of the bounding box to use.
-- Options:
-  - .minX: Use the minimum X-coordinate.
-  - .maxX: Use the maximum X-coordinate.
-  
-3. yCorner (default: .minY):
-- Specifies which Y-coordinate of the bounding box to use.
-- Options:
-  - .minY: Use the minimum Y-coordinate.
-  - .maxY: Use the maximum Y-coordinate.
+let cursorBounds = CursorBounds()
 
-### **Default Behavior**
-
-```swift
-if let origin = CursorBounds().getOrigin() {
-    print("Origin ID: \(origin.id)")
-    print("Origin Type: \(origin.type.rawValue)")
-    print("Origin Coordinates: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
-} else {
-    print("Failed to retrieve origin.")
+do {
+    let position = try cursorBounds.cursorPosition()
+    print("Cursor at: (\(position.x), \(position.y))")
+    print("Detection method: \(position.type)")
+} catch {
+    print("Error: \(error.localizedDescription)")
 }
 ```
 
-### **Customized Behavior**
+### **Error Handling**
 
 ```swift
-if let origin = CursorBounds().getOrigin(correctionMode: .none) {
-print("Origin Coordinates without Y-axis correction: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
+do {
+    let position = try cursorBounds.cursorPosition()
+    // Use the position...
+} catch CursorBoundsError.accessibilityPermissionDenied {
+    print("Need accessibility permissions")
+    CursorBounds.requestAccessibilityPermissions()
+} catch CursorBoundsError.noFocusedElement {
+    print("No text field is focused")
+} catch CursorBoundsError.cursorPositionUnavailable {
+    print("Could not detect cursor position")
+} catch CursorBoundsError.screenNotFound {
+    print("Cursor is outside screen bounds")
 }
 ```
 
+### **Convenience Methods**
+
 ```swift
-if let origin = CursorBounds().getOrigin(xCorner: .maxX, yCorner: .maxY) {
-print("Top-right corner coordinates: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
+// Just get the point
+let point = try cursorBounds.cursorPoint()
+print("Cursor at: (\(point.x), \(point.y))")
+
+// Just get the detection method
+let type = try cursorBounds.cursorType()
+print("Using: \(type)") // "Text Caret", "Text Field", or "Mouse Fallback"
+```
+
+### **Permission Management**
+
+```swift
+// Check permissions first
+guard CursorBounds.isAccessibilityEnabled() else {
+    print("Accessibility permissions required")
+    CursorBounds.requestAccessibilityPermissions()
+    return
+}
+
+// Now safe to get cursor position
+let position = try cursorBounds.cursorPosition()
+```
+
+### **Coordinate System Options**
+
+The Accessibility API returns coordinates in macOS's native coordinate system, where (0,0) is at the **bottom-left** corner of the screen. However, many UI frameworks (especially those designed for cross-platform compatibility) expect coordinates with (0,0) at the **top-left** corner, similar to iOS.
+
+This difference exists because macOS historically used a bottom-left origin system, while iOS and many modern UI frameworks use a top-left origin. When displaying UI elements like popups or overlays, you typically want the flipped coordinates.
+
+```swift
+// Use raw macOS coordinates (bottom-left origin)
+let position = try cursorBounds.cursorPosition(
+    correctionMode: .none,
+    corner: .bottomRight
+)
+
+// Use flipped coordinates (top-left origin, default)
+let position = try cursorBounds.cursorPosition(
+    correctionMode: .adjustForYAxis,  // default
+    corner: .topLeft                  // default
+)
+```
+
+#### **What You Get Back**
+
+The `CursorPosition` struct contains:
+
+```swift
+public struct CursorPosition {
+    public let point: NSPoint     // Final calculated position
+    public let type: CursorType   // Detection method used
+    public let bounds: CGRect     // Raw bounding rectangle
+    
+    public var x: CGFloat { point.x }  // Convenience property
+    public var y: CGFloat { point.y }  // Convenience property
 }
 ```
 
+#### **Detection Methods**
+
+The `type` property indicates how the cursor was detected:
+
 ```swift
-if let origin = CursorBounds().getOrigin(correctionMode: .none, xCorner: .maxX, yCorner: .minY) {
-print("Ucorrected bottom-right corner coordinates: x = \(origin.NSPoint.x), y = \(origin.NSPoint.y)")
+public enum CursorType {
+    case textCaret      // Precise text cursor position
+    case textField      // Text field bounding area
+    case mouseFallback  // Mouse cursor position (fallback)
 }
 ```
-
-#### **What `getOrigin` Returns**
-
-The `getOrigin` method returns an optional `Origin` object (`Origin?`). If successful, you’ll receive an `Origin` with the following structure:
-
-```swift
-public struct Origin: Hashable {
-    public private(set) var id: UUID
-    public var type: OriginType
-    public var NSPoint: NSPoint
-
-    public init(id: UUID = UUID(), type: OriginType, NSPoint: NSPoint) {
-        self.id = id
-        self.type = type
-        self.NSPoint = NSPoint
-    }
-}
-```
-
-NSPoint in `Origin` represents the calculated location of the top left point of the rect
-
-#### **Understanding `OriginType`**
-
-The `type` property of `Origin` indicates the source of the origin. It is an enum with the following cases:
-
-```swift
-public enum OriginType: String {
-    case caret = "Caret"             // Represents a caret position
-    case rect = "Text Rect"          // Represents a text field/area bounding rect
-    case mouseCursor = "Mouse Cursor" // Represents the mouse cursor position
-}
-```
-
-### **Setting the Debug Level**
-
-You can control the verbosity of the logs by setting the `logLevel` in `CursorBoundsConfig`. [View log documentation](docs/logs.md) For example, to enable debug-level logging:
-
-```swift
-CursorBoundsConfig.shared.logLevel = .debug
-```
-
-The available log levels include:
-- `.debug`: For detailed information useful during development.
-- `.info`: For general informational logs.
-- `.warning`: For recoverable issues.
-- `.error`: For critical errors.
-- `.none`: No logs at all.
 
 ---
 
@@ -174,14 +189,25 @@ The available log levels include:
 
 ## **Permissions**
 
-To use this package, your app must have **Accessibility permissions**, and **App Sandbox must be disabled**. **Accessibility permissions** can be configured in **System Preferences > Privacy & Security > Accessibility**. Ensure that your app is checked in the list of allowed apps.
+**Accessibility permissions** are always required. You can check and request them programmatically:
+
+```swift
+// Check if permissions are granted
+if CursorBounds.isAccessibilityEnabled() {
+    // Ready to use CursorBounds
+} else {
+    // Request permissions (opens System Preferences)
+    CursorBounds.requestAccessibilityPermissions()
+}
+```
+
+**App Sandbox** only needs to be disabled if you want to track cursors in other applications. For most use cases (tracking cursors within your own app), App Sandbox can remain enabled.
 
 ---
 
 ## License
 
 This project is released under the MIT License. See [LICENSE](LICENSE.md) for details.
-
 
 ## Contributing
 
