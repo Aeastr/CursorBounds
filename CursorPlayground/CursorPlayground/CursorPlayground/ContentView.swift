@@ -29,20 +29,20 @@ struct ContentView: View {
     @State private var capturedPositions: [CursorPosition] = []
     @State private var timerInterval: Double = 1.0
     @State private var isCapturing = false
-
+    
     // Continuous Monitor
     @State private var cursorMonitor = CursorMonitor()
     @State private var isMonitoring = false
     @State private var monitoredPosition: CursorPosition? = nil
     @State private var monitoringHistory: [CursorPosition] = []
-
+    
     // Accessibility
     @State private var hasAccessibilityPermissions = false
     @State private var showPermissionsSheet = false
-
+    
     // Timer via Combine (safer UI updates, easy to cancel)
     @State private var timerCancellable: AnyCancellable?
-
+    
     var body: some View {
         
         NavigationSplitView {
@@ -90,7 +90,7 @@ struct ContentView: View {
                 .blur(radius: showPermissionsSheet || !hasAccessibilityPermissions ? 2 : 0)
                 .animation(.easeInOut(duration: 0.2), value: showPermissionsSheet)
                 .animation(.easeInOut(duration: 0.2), value: hasAccessibilityPermissions)
-
+                
                 if !hasAccessibilityPermissions {
                     PermissionOverlay {
                         showPermissionsSheet = true
@@ -106,12 +106,12 @@ struct ContentView: View {
                 checkPermissions()
             }
         }
-
+        
         .onAppear {
             checkPermissions()
         }
     }
-
+    
     private func checkPermissions() {
         let enabled = CursorBounds.isAccessibilityEnabled()
         hasAccessibilityPermissions = enabled
@@ -119,7 +119,7 @@ struct ContentView: View {
             showPermissionsSheet = true
         }
     }
-
+    
     private func fetchPosition() {
         guard hasAccessibilityPermissions else { return }
         do {
@@ -129,7 +129,7 @@ struct ContentView: View {
             debugPrint("Error fetching cursor position: \(error.localizedDescription)")
         }
     }
-
+    
     private func startTimer() {
         guard hasAccessibilityPermissions else {
             showPermissionsSheet = true
@@ -149,7 +149,7 @@ struct ContentView: View {
                 }
             }
     }
-
+    
     private func stopTimer() {
         timerCancellable?.cancel()
         timerCancellable = nil
@@ -161,24 +161,24 @@ struct ContentView: View {
 
 struct PermissionOverlay: View {
     var onOpen: () -> Void
-
+    
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: "hand.tap")
                 .font(.system(size: 48, weight: .regular))
                 .foregroundStyle(.secondary)
-
+            
             Text("Accessibility Permissions Required")
                 .font(.title3.weight(.semibold))
-
+            
             Text(
                 "CursorPlayground needs accessibility permissions to read the " +
-                    "cursor position. Grant permissions in System Settings."
+                "cursor position. Grant permissions in System Settings."
             )
             .multilineTextAlignment(.center)
             .foregroundStyle(.secondary)
             .frame(maxWidth: 460)
-
+            
             HStack(spacing: 12) {
                 Button("Open System Settings", action: onOpen)
                     .buttonStyle(.borderedProminent)
@@ -201,24 +201,24 @@ struct PermissionOverlay: View {
 struct PermissionsSheet: View {
     var onOpen: () -> Void
     var onDismiss: () -> Void
-
+    
     var body: some View {
         VStack(spacing: 16) {
             HStack {
                 Image(systemName: "lock.shield")
-
+                
                 Text("Accessibility Permissions")
                     .font(.title3.weight(.semibold))
                 Spacer()
             }
-
+            
             Text(
                 "This app reads the current cursor position using Accessibility. " +
-                    "Click the button below to open System Settings and grant permission."
+                "Click the button below to open System Settings and grant permission."
             )
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
-
+            
             HStack(spacing: 12) {
                 Button("Open System Settings", action: onOpen)
                     .buttonStyle(.borderedProminent)
@@ -227,9 +227,9 @@ struct PermissionsSheet: View {
                 }
                 .keyboardShortcut(.defaultAction)
             }
-
+            
             Divider()
-
+            
             PermissionTips()
                 .padding(.top, 4)
         }
@@ -274,7 +274,7 @@ struct CurrentOriginView: View {
     @State private var showThresholdAlert = false
     @State private var pollingInputText = ""
     @State private var thresholdInputText = ""
-
+    
     var body: some View {
         HStack(alignment: .top, spacing: 20) {
             
@@ -402,7 +402,7 @@ struct CurrentOriginView: View {
                         startMonitoring()
                     }
                 } label: {
-                    Label(isMonitoring ? "Stop" : "Start", 
+                    Label(isMonitoring ? "Stop" : "Start",
                           systemImage: isMonitoring ? "stop.circle.fill" : "play.circle.fill")
                 }
                 .keyboardShortcut(.space, modifiers: [])
@@ -475,7 +475,7 @@ struct CurrentOriginView: View {
             monitor.startMonitoring()
         }
     }
-
+    
     private func format(_ d: CGFloat) -> String {
         String(format: "%.1f", d)
     }
@@ -583,20 +583,20 @@ struct CaptureTimerView: View {
 
 struct CapturedRow: View {
     let position: CursorPosition
-
+    
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "cursorarrow")
-
+            
             VStack(alignment: .leading, spacing: 2) {
                 Text(position.type.rawValue)
                     .font(.subheadline.weight(.semibold))
-
+                
                 Text("x: \(fmt(position.point.x))  y: \(fmt(position.point.y))")
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
             }
-
+            
             Spacer()
         }
         .padding(8)
@@ -605,7 +605,7 @@ struct CapturedRow: View {
                 .fill(Color.gray.opacity(0.08))
         )
     }
-
+    
     private func fmt(_ d: CGFloat) -> String {
         String(format: "%.1f", d)
     }
@@ -616,7 +616,7 @@ struct CapturedRow: View {
 struct StatusPill: View {
     var isCapturing: Bool
     var count: Int
-
+    
     var body: some View {
         HStack(spacing: 8) {
             Circle()
