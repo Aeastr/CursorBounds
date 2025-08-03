@@ -1,8 +1,7 @@
 <div align="center">
   <img width="270" height="270" src="/assets/icon.png" alt="Ibeam selecting text 'relia' against a mint green background">
   <h1><b>CursorBounds</b></h1>
-  <p>Swift package that provides precise information about the position and bounds of the text cursor (caret) in macOS applications. It leverages the macOS Accessibility API to retrieve the caret's location and bounding rectangle, with fallbacks<br>
-  <i>Compatible with macOS 12.0 and later</i></p>
+  <p>Swift package that provides precise information about the position and bounds of the text cursor (caret) in macOS applications. It leverages the macOS Accessibility API to retrieve the caret's location and bounding rectangle, with fallbacks
 </div>
 
 <div align="center">
@@ -49,9 +48,9 @@ When neither the caret nor the bounding rectangle is accessible, it uses the pos
 **Required:** Accessibility permissions must be granted to use this package. The system will prompt users to grant these permissions.
 
 ### **App Sandbox**
-**Internal** App Sandbox can remain enabled when tracking cursors within your own application.
+**Internal:** App Sandbox can remain enabled when tracking cursors within your own application.
 
-**External** App Sandbox must be disabled **only** if you need to track cursors in *other* applications (external apps).
+**External:** App Sandbox must be disabled **only** if you need to track cursors in *other* applications (external apps).
 
 ---
 
