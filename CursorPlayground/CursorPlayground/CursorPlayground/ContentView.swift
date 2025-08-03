@@ -12,6 +12,7 @@ import Combine
 enum SidebarItem: String, CaseIterable, Identifiable {
     case currentOrigin = "Current Origin"
     case captureTimer = "Capture Timer"
+    case popupSettings = "Popup Settings"
     
     var id: String { rawValue }
     
@@ -19,6 +20,7 @@ enum SidebarItem: String, CaseIterable, Identifiable {
         switch self {
         case .currentOrigin: return "cursorarrow.rays"
         case .captureTimer: return "clock.arrow.circlepath"
+        case .popupSettings: return "keyboard"
         }
     }
 }
@@ -78,6 +80,9 @@ struct ContentView: View {
                             }
                         )
                         .padding()
+                    case .popupSettings:
+                        PopupSettingsView()
+                            .padding()
                     case .none:
                         ContentUnavailableView(
                             "Select a View",
