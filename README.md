@@ -52,9 +52,16 @@ Understand what the user is doing:
 - **🛡️ Type-Safe API** - Swift-native with proper error handling
 - **🔧 Highly Configurable** - Customize browser detection and behavior
 - **📱 Modern Swift** - Uses latest Swift features and conventions
-- Built-in accessibility permission management
-- Coordinate system correction for macOS vs iOS-style coordinates
-- Convenience methods for common use cases
+
+## **Documentation**
+
+**📖 [Complete Documentation](https://github.com/Aeastr/CursorBounds/wiki)** available in the CursorBounds Wiki
+
+## **Requirements**
+
+- **macOS 12.0+** and **Swift 5.5+**
+- **Accessibility Permissions** - Required for all functionality
+- **App Sandbox** - Must be disabled for external app usage
 
 ## **Requirements Notice**
 
@@ -68,24 +75,7 @@ Understand what the user is doing:
 
 ---
 
-## **Installation**
-
-### **Swift Package Manager**
-To include `CursorBounds` in your project:
-
-1. Open your Xcode project.
-2. Go to **File > Add Packages...**.
-3. Paste the following URL in the search bar:
-   ```
-   https://github.com/aeastr/CursorBounds.git/
-   ```
-4. Choose the desired version and click **Add Package**.
-
----
-
-## Playground
-
-[CursorPlayground](CursorPlayground) is a bundled macOS demo app that lets you explore CursorBounds in action.
+**📖 [Complete Documentation](https://github.com/Aeastr/CursorBounds/wiki)** available in the CursorBounds Wiki
 
 ### Current Origin Example
 
