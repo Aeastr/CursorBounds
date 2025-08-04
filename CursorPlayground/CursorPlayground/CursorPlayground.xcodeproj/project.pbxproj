@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D02D62C2E3FF4B1002F6ABC /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 2D02D62B2E3FF4B1002F6ABC /* KeyboardShortcuts */; };
 		2D63F55A2D2F07D500BBE284 /* CursorBounds in Frameworks */ = {isa = PBXBuildFile; productRef = 2D63F5592D2F07D500BBE284 /* CursorBounds */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D63F55A2D2F07D500BBE284 /* CursorBounds in Frameworks */,
+				2D02D62C2E3FF4B1002F6ABC /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +73,7 @@
 			name = CursorPlayground;
 			packageProductDependencies = (
 				2D63F5592D2F07D500BBE284 /* CursorBounds */,
+				2D02D62B2E3FF4B1002F6ABC /* KeyboardShortcuts */,
 			);
 			productName = CursorPlayground;
 			productReference = 2D141E0A2D2F05900011EFD4 /* CursorPlayground.app */;
@@ -102,6 +105,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				2D63F5582D2F07D500BBE284 /* XCLocalSwiftPackageReference "../../../CursorBounds" */,
+				2D02D62A2E3FF4B1002F6ABC /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2D141E0B2D2F05900011EFD4 /* Products */;
@@ -336,7 +340,23 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		2D02D62A2E3FF4B1002F6ABC /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		2D02D62B2E3FF4B1002F6ABC /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2D02D62A2E3FF4B1002F6ABC /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
 		2D63F5592D2F07D500BBE284 /* CursorBounds */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CursorBounds;
