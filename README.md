@@ -51,9 +51,9 @@ Understand what the user is doing:
 
 | Requirement | Status | Description |
 |-------------|--------|-------------|
-| **Accessibility Permissions** | **Required** | Must be granted to use this package. The system will prompt users to grant these permissions. |
-| **App Sandbox (Internal Use)** | Optional | Can remain enabled when tracking cursors within your own application. |
-| **App Sandbox (External Use)** | Must be disabled | Required only if you need to track cursors in *other* applications (external apps). |
+| **Accessibility Permissions** | **🔴 Required** | Must be granted to use this package. The system will prompt users to grant these permissions. |
+| **App Sandbox (Internal Use)** | **🟢 Optional** | Can remain enabled when tracking cursors within your own application. |
+| **App Sandbox (External Use)** | **🚨 Must be disabled** | Required only if you need to track cursors in ***other*** applications (external apps). |
 
 ---
 
@@ -72,6 +72,10 @@ The **Current Origin** tab continuously displays the live caret position (or the
 ![Capture Timer Demo](assets/Playground%20CaptureTimer.png)
 
 The **Capture Timer** tab records cursor positions at a configurable interval, useful for sampling cursor movement over time.
+
+### Smart Positioning Example (Popup)
+
+CursorPlayground also features a pop example, while the app is running, pressing the configured keyboard shortcut will display a popup using the smart positioning method (see [Smart Positioning](https://github.com/Aeastr/CursorBounds/wiki/CursorBounds-API)). You can customize the keyboard shortcut in the Popup settings tab.
 
 ---
 
