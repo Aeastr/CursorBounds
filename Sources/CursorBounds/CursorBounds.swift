@@ -132,7 +132,7 @@ let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).co
         
         let point = NSPoint(x: xCoordinate, y: correctedY)
         print("[CursorBounds] Final point: \(point), cursorType: \(cursorType)")
-        return CursorPosition(point: point, type: cursorType, bounds: cursorPositionResult.bounds)
+        return CursorPosition(point: point, type: cursorType, bounds: cursorPositionResult.bounds, screen: screen)
     }
     
     /// Gets just the cursor point (convenience method)
@@ -152,6 +152,100 @@ let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).co
     public func cursorType() throws -> CursorType {
         let position = try cursorPosition()
         return position.type
+    }
+    
+    /// Calculates an intelligent position for a popup or UI element relative to the cursor
+    ///
+    /// This method handles screen boundary detection, smart positioning with fallbacks,
+    /// and ensures the popup stays within visible screen bounds.
+    ///
+    /// - Parameters:
+    ///   - size: The size of the popup/element to be positioned
+    ///   - preferredPosition: Where to position relative to cursor. `.auto` chooses best option
+    ///   - margin: Distance between cursor and popup edge (default: 12 points)
+    ///   - correctionMode: Screen coordinate correction mode
+    ///   - corner: Which corner of cursor bounds to use as reference
+    /// - Returns: The calculated origin point for the popup
+    /// - Throws: `CursorBoundsError` if cursor position cannot be determined
+    public func smartPosition(
+        for size: CGSize,
+        preferredPosition: PopupPosition = .auto,
+        margin: CGFloat = 12,
+        correctionMode: ScreenCorrectionMode = .adjustForYAxis,
+        corner: BoundsCorner = .topLeft
+    ) throws -> NSPoint {
+        // Get the cursor position
+        let cursorPos = try cursorPosition(correctionMode: correctionMode, corner: corner)
+        
+        // Use the screen that was already found in cursorPosition()
+        let screen = cursorPos.screen
+        
+        let visible = screen.visibleFrame
+        
+        // Calculate Y position based on preferred position and available space
+        let belowY = cursorPos.point.y + margin
+        let aboveY = cursorPos.point.y - size.height - margin
+        
+        var originY: CGFloat
+        
+        switch preferredPosition {
+        case .below:
+            // Try below first, fallback to above if no space
+            if belowY + size.height <= visible.maxY {
+                originY = belowY
+            } else if aboveY >= visible.minY {
+                originY = aboveY
+            } else {
+                // Constrain within screen bounds
+                originY = max(min(belowY, visible.maxY - size.height), visible.minY)
+            }
+            
+        case .above:
+            // Try above first, fallback to below if no space
+            if aboveY >= visible.minY {
+                originY = aboveY
+            } else if belowY + size.height <= visible.maxY {
+                originY = belowY
+            } else {
+                // Constrain within screen bounds
+                originY = max(min(aboveY, visible.maxY - size.height), visible.minY)
+            }
+            
+        case .auto:
+            // Choose the position with more available space
+            let spaceBelow = visible.maxY - belowY
+            let spaceAbove = aboveY - visible.minY
+            
+            if spaceBelow >= size.height {
+                // Enough space below
+                originY = belowY
+            } else if spaceAbove >= size.height {
+                // Enough space above
+                originY = aboveY
+            } else if spaceBelow >= spaceAbove {
+                // More space below, even if not enough
+                originY = belowY
+            } else {
+                // More space above
+                originY = aboveY
+            }
+            
+            // Ensure we stay within bounds
+            originY = max(min(originY, visible.maxY - size.height), visible.minY)
+        }
+        
+        // Calculate X position, keeping popup on screen
+        var originX = cursorPos.point.x
+        
+        // Adjust X to keep popup within screen bounds
+        if originX + size.width > visible.maxX {
+            originX = visible.maxX - size.width - 8  // Small margin from edge
+        }
+        if originX < visible.minX {
+            originX = visible.minX + 8  // Small margin from edge
+        }
+        
+        return NSPoint(x: originX, y: originY)
     }
     
     // MARK: - Utility Methods

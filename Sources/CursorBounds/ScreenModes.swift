@@ -48,3 +48,13 @@ public enum BoundsCornerY {
     case minY
     case maxY
 }
+
+/// Specifies the preferred position for popup elements relative to the cursor
+public enum PopupPosition {
+    /// Position the popup below the cursor (preferred)
+    case below
+    /// Position the popup above the cursor
+    case above
+    /// Automatically choose the best position based on available screen space
+    case auto
+}

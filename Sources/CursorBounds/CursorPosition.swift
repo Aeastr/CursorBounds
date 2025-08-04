@@ -21,16 +21,20 @@ public struct CursorPosition: Identifiable, Hashable {
     /// The bounding rectangle of the cursor or text element
     public let bounds: CGRect
     
+    /// The screen containing the cursor position
+    public let screen: NSScreen
+    
     /// Convenience property for X coordinate
     public var x: CGFloat { point.x }
     
     /// Convenience property for Y coordinate  
     public var y: CGFloat { point.y }
     
-    public init(point: NSPoint, type: CursorType, bounds: CGRect) {
+    public init(point: NSPoint, type: CursorType, bounds: CGRect, screen: NSScreen) {
         self.point = point
         self.type = type
         self.bounds = bounds
+        self.screen = screen
     }
 
     public static func == (lhs: CursorPosition, rhs: CursorPosition) -> Bool {

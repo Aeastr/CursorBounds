@@ -102,33 +102,18 @@ final class CursorPopupPanel: NSPanel {
     }
     
     private func frameOrigin(for pos: CursorPosition) -> NSPoint {
-        guard let screen = NSScreen.screens.first(where: { $0.visibleFrame.contains(pos.point) }) else {
+        // Use the built-in smart positioning from CursorBounds package
+        let cursorBounds = CursorBounds()
+        do {
+            return try cursorBounds.smartPosition(
+                for: frame.size,
+                preferredPosition: .below,
+                margin: 12
+            )
+        } catch {
+            // Fallback to cursor position if smart positioning fails
+            print("[CursorPopupPanel] Smart positioning failed: \(error), using cursor position")
             return pos.point
         }
-        let popupSize = frame.size
-        let visible = screen.visibleFrame
-        
-        // Prefer below the point if space, else above.
-        let aboveY = pos.point.y + 12
-        let belowY = pos.point.y - popupSize.height - 12
-        var originY: CGFloat
-        if belowY >= visible.minY {
-            originY = belowY
-        } else if aboveY + popupSize.height <= visible.maxY {
-            originY = aboveY
-        } else {
-            originY = max(min(belowY, visible.maxY - popupSize.height), visible.minY)
-        }
-        
-        // Start X at point.x, adjust to keep on-screen
-        var originX = pos.point.x
-        if originX + popupSize.width > visible.maxX {
-            originX = visible.maxX - popupSize.width - 8
-        }
-        if originX < visible.minX {
-            originX = visible.minX + 8
-        }
-        
-        return NSPoint(x: originX, y: originY)
     }
 }
