@@ -21,13 +21,16 @@ import ApplicationServices
 /// - ❌ **Tracking cursors in external apps:** App Sandbox must be disabled
 ///
 /// Use cases (like showing popups relative to text fields in your own app) work fine with App Sandbox enabled.
-public struct CursorBounds {
-    
+public class CursorBounds {
+    static let shared = CursorBounds.init()
     public init() {}
     
     // MARK: - Primary Methods
     
     /// Gets the current cursor position and bounds information
+    ///
+    /// This method is lightweight and focused solely on cursor positioning. For app and website context
+    /// information, use CursorContext.
     ///
     /// The Accessibility API returns coordinates in macOS native coordinate system (origin at bottom-left),
     /// but you may need coordinates in a "flipped" system (origin at top-left) depending on your use case.
@@ -43,48 +46,27 @@ public struct CursorBounds {
         correctionMode: ScreenCorrectionMode = .adjustForYAxis,
         corner: BoundsCorner = .topLeft
     ) throws -> CursorPosition {
-        print("[CursorBounds] cursorPosition called - correctionMode: \(correctionMode), corner: \(corner)")
-        
         // Check accessibility permissions first
-        print("[CursorBounds] Checking accessibility permissions…")
         guard Self.isAccessibilityEnabled() else {
-            print("[CursorBounds] Accessibility permission denied")
             throw CursorBoundsError.accessibilityPermissionDenied
         }
         
-        // Get focused element
-        print("[CursorBounds] Accessibility enabled ✅")
-        let focusedElementOpt = getFocusedElement()
-        if focusedElementOpt == nil {
-            print("[CursorBounds] No focused element found – falling back to mouse location")
-        }
-        let focusedElement = focusedElementOpt
+        // Get focused element and resolve cursor position
+        let focusedElement = getFocusedElement()
         
         var cursorPositionResult: CursorPositionResult
-        if let focusedElement {
-            print("[CursorBounds] Focused element obtained")
-            if let resolved = focusedElement.resolveCursorPosition() {
-                cursorPositionResult = resolved
-            } else {
-                print("[CursorBounds] Failed to resolve cursor position from focused element – using mouse fallback")
-                let mouseRect = CGRect(origin: NSEvent.mouseLocation, size: .zero)
-                cursorPositionResult = CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
-            }
+        if let focusedElement,
+           let resolved = focusedElement.resolveCursorPosition() {
+            cursorPositionResult = resolved
         } else {
-            // Use mouse fallback immediately
+            // Use mouse fallback
             let mouseRect = CGRect(origin: NSEvent.mouseLocation, size: .zero)
             cursorPositionResult = CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
         }
         
-        // Diagnostic: list available screens
-        for (idx, scr) in NSScreen.screens.enumerated() {
-            print("[CursorBounds] Screen #\(idx) frame: \(scr.frame)")
-        }
-        print("[CursorBounds] Using original macOS point for screen lookup: \(cursorPositionResult.bounds.origin)")
         // Find which screen contains the cursor
-        print("[CursorBounds] cursorPositionResult: bounds=\(cursorPositionResult.bounds), type=\(cursorPositionResult.type)")
         let searchPoint = cursorPositionResult.bounds.origin
-let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(searchPoint) })
+        let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(searchPoint) })
         guard let screen else {
             print("[CursorBounds] Screen not found for point \(cursorPositionResult.bounds.origin)")
             throw CursorBoundsError.screenNotFound
@@ -131,7 +113,7 @@ let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).co
         }
         
         let point = NSPoint(x: xCoordinate, y: correctedY)
-        print("[CursorBounds] Final point: \(point), cursorType: \(cursorType)")
+        
         return CursorPosition(point: point, type: cursorType, bounds: cursorPositionResult.bounds, screen: screen)
     }
     
@@ -262,4 +244,11 @@ let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).co
         let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
         AXIsProcessTrustedWithOptions(options)
     }
+}
+
+// MARK: - Helper Functions
+
+/// Safely casts a `CFTypeRef` to a desired type.
+public func castCF<T, U>(_ value: T, to type: U.Type = U.self) -> U? {
+    return value as? U
 }

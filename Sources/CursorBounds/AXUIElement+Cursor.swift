@@ -9,17 +9,6 @@ import AppKit
 import ApplicationServices
 import Accessibility
 
-// MARK: - Helper Function
-
-/// Safely casts a `CFTypeRef` to a desired type.
-/// - Parameters:
-///   - value: The value to cast.
-///   - type: The desired type.
-/// - Returns: The casted value if successful, otherwise `nil`.
-private func castCF<T, U>(_ value: T, to type: U.Type = U.self) -> U? {
-    return value as? U
-}
-
 // MARK: - AXUIElement Extension
 
 internal extension AXUIElement {
@@ -156,7 +145,7 @@ internal extension AXUIElement {
     /// Retrieves a string attribute from the AXUIElement.
     /// - Parameter attribute: The AX attribute to retrieve (e.g., kAXRoleAttribute).
     /// - Returns: The string value of the attribute, or `nil` if unavailable.
-    private func getAttributeString(attribute: String) -> String? {
+    internal func getAttributeString(attribute: String) -> String? {
         
         var value: CFTypeRef?
         let error = AXUIElementCopyAttributeValue(self, attribute as CFString, &value)
@@ -165,13 +154,25 @@ internal extension AXUIElement {
             return nil
         }
         
-        // Use castCF to safely cast the value to CFString
-        if let cfString = castCF(value, to: CFString.self) {
-            let string = cfString as String
-            return string
-        } else {
+        // Check if the value is actually a string before trying to cast it
+        guard let unwrappedValue = value else {
             return nil
         }
+        
+        // Check the type first to avoid crashes
+        let typeID = CFGetTypeID(unwrappedValue)
+        let stringTypeID = CFStringGetTypeID()
+        
+        if typeID == stringTypeID {
+            // Safe to cast to CFString
+            if let cfString = castCF(unwrappedValue, to: CFString.self) {
+                let string = cfString as String
+                return string
+            }
+        }
+        
+        // If it's not a string type, return nil instead of crashing
+        return nil
     }
     
     

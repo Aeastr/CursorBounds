@@ -29,7 +29,6 @@ private struct PopupContent: View {
     }
 }
 
-
 struct VisualEffectView: NSViewRepresentable {
     let visualEffectView = NSVisualEffectView()
     
@@ -48,7 +47,7 @@ struct VisualEffectView: NSViewRepresentable {
 
 final class CursorPopupPanel: NSPanel {
     // MARK: - Lifecycle
-    init(position: CursorPosition) {
+    init() {
         let size = NSSize(width: 200, height: 120)
         super.init(contentRect: NSRect(origin: .zero, size: size),
                    styleMask: [.nonactivatingPanel, .borderless, .fullSizeContentView],
@@ -70,8 +69,27 @@ final class CursorPopupPanel: NSPanel {
         isOpaque = false
         backgroundColor = .clear
         
-        contentView = NSHostingView(rootView: PopupContent(position: position))
-        setFrameOrigin(frameOrigin(for: position))
+        // Initialize with current cursor position
+        do {
+            let cursorBounds = CursorBounds()
+            let cursorContext = CursorContext()
+            let position = try cursorBounds.cursorPosition(correctionMode: .adjustForYAxis)
+            if let info = cursorContext.windowInfo() { print(info) }
+            contentView = NSHostingView(rootView: PopupContent(position: position))
+            let origin = try frameOrigin()
+            setFrameOrigin(origin)
+        } catch {
+            // Fallback if cursor position fails
+            print("[CursorPopupPanel] Failed to get cursor position during init: \(error)")
+            let fallbackPosition = CursorPosition(
+                point: NSPoint(x: 100, y: 100),
+                type: .mouseFallback,
+                bounds: CGRect(x: 100, y: 100, width: 0, height: 0),
+                screen: NSScreen.main ?? NSScreen.screens[0]
+            )
+            contentView = NSHostingView(rootView: PopupContent(position: fallbackPosition))
+            setFrameOrigin(NSPoint(x: 100, y: 100))
+        }
         
         // Rounded corners & shadow
         if let cv = contentView {
@@ -94,26 +112,29 @@ final class CursorPopupPanel: NSPanel {
     }
     
     // MARK: - Positioning
-    func reposition(to position: CursorPosition) {
-        setFrameOrigin(frameOrigin(for: position))
-        if let hosting = contentView as? NSHostingView<PopupContent> {
-            hosting.rootView = PopupContent(position: position)
+    func reposition() {
+        do {
+            let origin = try frameOrigin()
+            setFrameOrigin(origin)
+            
+            // Update content with current cursor position for display
+            let cursorBounds = CursorBounds()
+            let position = try cursorBounds.cursorPosition(correctionMode: .adjustForYAxis)
+            if let hosting = contentView as? NSHostingView<PopupContent> {
+                hosting.rootView = PopupContent(position: position)
+            }
+        } catch {
+            print("[CursorPopupPanel] Failed to reposition: \(error)")
         }
     }
     
-    private func frameOrigin(for pos: CursorPosition) -> NSPoint {
+    private func frameOrigin() throws -> NSPoint {
         // Use the built-in smart positioning from CursorBounds package
         let cursorBounds = CursorBounds()
-        do {
-            return try cursorBounds.smartPosition(
-                for: frame.size,
-                preferredPosition: .below,
-                margin: 12
-            )
-        } catch {
-            // Fallback to cursor position if smart positioning fails
-            print("[CursorPopupPanel] Smart positioning failed: \(error), using cursor position")
-            return pos.point
-        }
+        return try cursorBounds.smartPosition(
+            for: frame.size,
+            preferredPosition: .below,
+            margin: 12
+        )
     }
 }

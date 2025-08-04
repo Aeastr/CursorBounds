@@ -33,18 +33,13 @@ final class PopupManager {
     
     // MARK: - Panel Control
     private func togglePanel() {
-        do {
-            let position = try cursorBounds.cursorPosition(correctionMode: .adjustForYAxis)
-            if let panel, panel.isVisible {
-                panel.reposition(to: position)
-            } else {
-                let newPanel = CursorPopupPanel(position: position)
-                newPanel.orderFrontRegardless()
-                newPanel.makeKey()
-                self.panel = newPanel
-            }
-        } catch {
-            NSLog("PopupManager: Failed to obtain cursor position: \(error.localizedDescription)")
+        if let panel, panel.isVisible {
+            panel.reposition()
+        } else {
+            let newPanel = CursorPopupPanel()
+            newPanel.orderFrontRegardless()
+            newPanel.makeKey()
+            self.panel = newPanel
         }
     }
 }
