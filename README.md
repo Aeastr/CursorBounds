@@ -49,19 +49,17 @@ Understand what the user is doing:
 
 ## **Requirements Notice**
 
-### **Accessibility Permissions**
-**Required:** Accessibility permissions must be granted to use this package. The system will prompt users to grant these permissions.
-
-### **App Sandbox**
-**Internal:** App Sandbox can remain enabled when tracking cursors within your own application.
-
-**External:** App Sandbox must be disabled **only** if you need to track cursors in *other* applications (external apps).
+| Requirement | Status | Description |
+|-------------|--------|-------------|
+| **Accessibility Permissions** | **Required** | Must be granted to use this package. The system will prompt users to grant these permissions. |
+| **App Sandbox (Internal Use)** | Optional | Can remain enabled when tracking cursors within your own application. |
+| **App Sandbox (External Use)** | Must be disabled | Required only if you need to track cursors in *other* applications (external apps). |
 
 ---
 
 ## Playground Demos
 
-CursorBounds comes with a bundled demo app that lets you explore CursorBounds in action.
+CursorBounds comes with a bundled demo app that lets you explore CursorBounds in action. Open the Xcode workspace, select the `CursorPlayground` target, and press **Run** to try it out.
 
 ### Current Origin Example
 
@@ -74,8 +72,6 @@ The **Current Origin** tab continuously displays the live caret position (or the
 ![Capture Timer Demo](assets/Playground%20CaptureTimer.png)
 
 The **Capture Timer** tab records cursor positions at a configurable interval, useful for sampling cursor movement over time.
-
-Open the Xcode workspace, select the `CursorPlayground` target, and press **Run** to try it out.
 
 ---
 
