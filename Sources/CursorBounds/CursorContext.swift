@@ -84,7 +84,13 @@ public struct WebsiteInfo {
 
 public class CursorContext {
     public static let shared = CursorContext.init()
-    public init(){}
+    
+    /// Browsers to detect
+    public var browsers: Set<Browser>
+    
+    public init(browsers: Set<Browser> = Browser.default) {
+        self.browsers = browsers
+    }
 
     /// Gets comprehensive window and context information for the currently focused application
     /// - Returns: `WindowInfo` with available information
@@ -236,34 +242,7 @@ public class CursorContext {
     
     /// Checks if an application is a web browser based on its bundle ID
     private func isBrowser(bundleId: String) -> Bool {
-        // Common browser bundle identifiers
-        let knownBrowsers = [
-            "com.apple.Safari",                // Safari
-            "com.google.Chrome",               // Chrome
-            "org.mozilla.firefox",             // Firefox
-            "com.microsoft.edgemac",           // Edge
-            "com.brave.Browser",               // Brave
-            "com.operasoftware.Opera",         // Opera
-            "com.vivaldi.Vivaldi",            // Vivaldi
-            "com.torproject.tor",              // Tor
-            "net.imput.helium",               // Helium
-            "com.electron.browser"             // Electron-based browsers
-        ]
-        
-        // Check against known browser bundle IDs
-        if knownBrowsers.contains(bundleId) {
-            return true
-        }
-        
-        // Check if the bundle ID contains browser-like keywords
-        let browserKeywords = ["browser", "chrome", "safari", "firefox", "edge", "opera", "web"]
-        for keyword in browserKeywords {
-            if bundleId.lowercased().contains(keyword) {
-                return true
-            }
-        }
-        
-        return false
+        return browsers.contains { $0.bundleID == bundleId && $0.isEnabled }
     }
     
     /// Extracts domain from a URL string
@@ -349,32 +328,71 @@ public class CursorContext {
     }
 }
 
-/// Browser types that we can detect and extract additional context from
-public enum BrowserType: String, CaseIterable {
-    case safari = "com.apple.Safari"
-    case chrome = "com.google.Chrome"
-    case firefox = "org.mozilla.firefox"
-    case edge = "com.microsoft.edgemac"
-    case arc = "company.thebrowser.Browser"
-    case brave = "com.brave.Browser"
+/// Represents a browser that can be detected
+public struct Browser: Hashable {
+    public let bundleID: String
+    public let name: String
+    public let isEnabled: Bool
     
-    /// User-friendly name for the browser
-    public var displayName: String {
-        switch self {
-        case .safari: return "Safari"
-        case .chrome: return "Chrome"
-        case .firefox: return "Firefox"
-        case .edge: return "Edge"
-        case .arc: return "Arc"
-        case .brave: return "Brave"
-        }
+    public init(bundleID: String, name: String, isEnabled: Bool = true) {
+        self.bundleID = bundleID
+        self.name = name
+        self.isEnabled = isEnabled
     }
     
-    /// Whether this browser typically includes URL in window titles
-    public var includesUrlInTitle: Bool {
-        switch self {
-        case .safari, .chrome, .firefox: return true
-        case .edge, .arc, .brave: return false
-        }
+    /// Returns a copy of this browser with enabled state toggled
+    public func toggled() -> Browser {
+        return Browser(bundleID: bundleID, name: name, isEnabled: !isEnabled)
+    }
+    
+    /// Returns a copy of this browser with enabled state set
+    public func enabled(_ enabled: Bool = true) -> Browser {
+        return Browser(bundleID: bundleID, name: name, isEnabled: enabled)
+    }
+    
+    /// Returns a copy of this browser disabled
+    public func disabled() -> Browser {
+        return enabled(false)
+    }
+}
+
+// MARK: - Built-in Browser Convenience
+public extension Browser {
+    static let safari = Browser(bundleID: "com.apple.Safari", name: "Safari")
+    static let chrome = Browser(bundleID: "com.google.Chrome", name: "Chrome")
+    static let firefox = Browser(bundleID: "org.mozilla.firefox", name: "Firefox")
+    static let edge = Browser(bundleID: "com.microsoft.edgemac", name: "Edge")
+    static let arc = Browser(bundleID: "company.thebrowser.Browser", name: "Arc")
+    static let brave = Browser(bundleID: "com.brave.Browser", name: "Brave")
+    static let opera = Browser(bundleID: "com.operasoftware.Opera", name: "Opera")
+    static let vivaldi = Browser(bundleID: "com.vivaldi.Vivaldi", name: "Vivaldi")
+    static let tor = Browser(bundleID: "com.torproject.tor", name: "Tor")
+    static let helium = Browser(bundleID: "net.imput.helium", name: "Helium")
+    static let orion = Browser(bundleID: "com.kagi.kagimacOS", name: "Orion")
+    static let duckduckgo = Browser(bundleID: "com.duckduckgo.macos.browser", name: "DuckDuckGo")
+    static let waterfox = Browser(bundleID: "net.waterfox.waterfox", name: "Waterfox")
+    static let librewolf = Browser(bundleID: "io.gitlab.librewolf-community", name: "LibreWolf")
+    static let chromium = Browser(bundleID: "org.chromium.Chromium", name: "Chromium")
+    static let yandex = Browser(bundleID: "ru.yandex.desktop.yandex-browser", name: "Yandex")
+    static let dia = Browser(bundleID: "org.gnome.Dia", name: "Dia")
+    static let zen = Browser(bundleID: "app.zen-browser.zen", name: "Zen")
+    
+    /// All commonly known browsers
+    static let all: Set<Browser> = [
+        .safari, .chrome, .firefox, .edge, .arc, .brave, .opera, .vivaldi, .tor, .helium,
+        .orion, .duckduckgo, .waterfox, .librewolf, .chromium, .yandex, .dia, .zen
+    ]
+    
+    /// Default browser detection (all known browsers)
+    static let `default`: Set<Browser> = Browser.all
+    
+    /// Default browsers plus additional custom browsers
+    static func defaultWith(_ additionalBrowsers: Browser...) -> Set<Browser> {
+        return Browser.all.union(additionalBrowsers)
+    }
+    
+    /// Default browsers plus additional custom browsers from array
+    static func defaultWith(_ additionalBrowsers: [Browser]) -> Set<Browser> {
+        return Browser.all.union(additionalBrowsers)
     }
 }

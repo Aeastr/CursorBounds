@@ -1,7 +1,7 @@
 <div align="center">
   <img width="270" height="270" src="/assets/icon.png" alt="Ibeam selecting text 'relia' against a mint green background">
   <h1><b>CursorBounds</b></h1>
-  <p>A Swift package for macOS that provides precise cursor positioning and contextual information about focused applications and windows.</p>
+  <p>Swift package that provides precise information about the position and bounds of the text cursor (caret) in macOS applications. It leverages the macOS Accessibility API to retrieve the caret's location and bounding rectangle, with fallbacks
 </div>
 
 <div align="center">
@@ -18,40 +18,26 @@
 
 ---
 
-## **What is CursorBounds?**
+## **Positioning**
 
-CursorBounds is a comprehensive Swift package that gives you precise information about:
-- **Where the text cursor is** - Get exact pixel coordinates of the text caret
-- **What app is focused** - Identify the current application and window
-- **Browser context** - Extract URLs, domains, and page titles from web browsers
-- **Smart positioning** - Calculate optimal popup and overlay positions
+| ![Example of a cursor caret](assets/caretExample.png) | ![Bounding rectangle of a focused text area](assets/textAreaExample.png) | ![Fallback method using cursor position](assets/fallbackExample.png) |
+|:-----------------------------:|:-----------------------------:|:-----------------------------:|
+| **Cursor Caret**                 | **Text Field/Area**               | **Cursor**             |
+| Identifies the cursor caret, the blinking indicator that shows where text will be inserted. | Determines the bounding rectangle of the currently focused text area or input field. | Uses the screen position of the cursor if other methods are unavailable. |
+| Works reliably in most text input scenarios. | Provides a general area when caret data is not accessible. | Acts as a backup to ensure the cursor's position is still available. |
+| Preferred method for accuracy. | Handles cases where a text field is active but caret data cannot be retrieved. | Ensures functionality when no other data is accessible. |
 
-## **Core Components**
+CursorBounds primarily finds the cursor caret, _the blinking line or block that indicates where the next character will appear when typing_. 
+If the caret's position cannot be retrieved, it falls back to the bounding rectangle of the focused text area or field. 
+When neither the caret nor the bounding rectangle is accessible, it uses the position of the mouse cursor as a final fallback.
 
-### 🎯 **CursorBounds** - Precise Positioning
-Get exact cursor coordinates with intelligent fallback:
+---
 
-| ![Cursor Caret](assets/caretExample.png) | ![Text Field](assets/textAreaExample.png) | ![Mouse Fallback](assets/fallbackExample.png) |
-|:---:|:---:|:---:|
-| **Text Caret** | **Text Field Bounds** | **Mouse Cursor** |
-| Precise blinking cursor position | Focused text area rectangle | Screen cursor as fallback |
-
-### 🌐 **CursorContext** - App & Browser Intelligence
-Understand what the user is doing:
-- Detect focused applications and windows
-- Extract website URLs and domains from browsers
-- Identify search fields and page titles
-- Configurable browser detection (18+ browsers supported)
-
-## **Key Features**
-
-- **🎯 Precise Positioning** - Get exact text cursor coordinates
-- **🔄 Smart Fallbacks** - Three-tier system ensures reliability
-- **🌐 Browser Context** - Extract URLs, domains, and page info
-- **⚡ Real-time Monitoring** - Track cursor movement with configurable polling
-- **🛡️ Type-Safe API** - Swift-native with proper error handling
-- **🔧 Highly Configurable** - Customize browser detection and behavior
-- **📱 Modern Swift** - Uses latest Swift features and conventions
+## **Features**
+- Swift-native API with proper error handling using `throws`
+- Retrieve the position of the text caret (cursor) in macOS apps
+- Get the bounding rectangle of the caret for text fields and text areas
+- Three-tier fallback system: Text Caret → Text Field Bounds → Mouse Cursor
 - Built-in accessibility permission management
 - Coordinate system correction for macOS vs iOS-style coordinates
 - Convenience methods for common use cases

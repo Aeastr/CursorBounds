@@ -74,7 +74,10 @@ final class CursorPopupPanel: NSPanel {
             let cursorBounds = CursorBounds()
             let cursorContext = CursorContext()
             let position = try cursorBounds.cursorPosition(correctionMode: .adjustForYAxis)
-            if let info = cursorContext.windowInfo() { print(info) }
+            
+            let info = try cursorContext.windowInfo()
+            print(info)
+            
             contentView = NSHostingView(rootView: PopupContent(position: position))
             let origin = try frameOrigin()
             setFrameOrigin(origin)
