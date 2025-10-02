@@ -57,6 +57,30 @@ Understand what the user is doing:
 
 ---
 
+## **Debugging**
+
+CursorBounds includes optional debug logging to help troubleshoot cursor detection issues. Debug logging is **disabled by default** to avoid cluttering console output.
+
+### Enable Debug Logging
+
+```swift
+// Enable debug logging
+CursorMonitor.isDebugEnabled = true
+
+// Now all internal operations will print debug messages
+let position = try CursorBounds().cursorPosition()
+
+// Disable debug logging
+CursorMonitor.isDebugEnabled = false
+```
+
+Debug messages include:
+- Cursor position resolution attempts
+- Which detection method succeeded (caret bounds, text field rect, or mouse fallback)
+- Screen detection issues
+
+---
+
 ## Playground Demos
 
 CursorBounds comes with a bundled demo app that lets you explore CursorBounds in action. Open the Xcode workspace, select the `CursorPlayground` target, and press **Run** to try it out.

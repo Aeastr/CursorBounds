@@ -17,24 +17,24 @@ internal extension AXUIElement {
     /// - Returns: `cursorPositionResult` representing the bounding rectangle and type
     ///
     func resolveCursorPosition() -> CursorPositionResult? {
-        print("[AX] resolveCursorPosition start for element \(self)")
+        CursorBounds.debugPrint("[AX] resolveCursorPosition start for element \(self)")
 
         // 1. Attempt to get caret bounds (skip if zero-sized)
         if let caretBounds = getCaretBounds(), caretBounds.width > 0 || caretBounds.height > 0 {
-            print("[AX] Caret bounds detected: \(caretBounds)")
+            CursorBounds.debugPrint("[AX] Caret bounds detected: \(caretBounds)")
             return CursorPositionResult(type: .caret, bounds: caretBounds)
         }
 
         // 2. Attempt to get caret rect
         if let caretRect = getCaretRect() {
-            print("[AX] Caret rect fallback used: \(caretRect)")
+            CursorBounds.debugPrint("[AX] Caret rect fallback used: \(caretRect)")
             return CursorPositionResult(type: .rect, bounds: caretRect)
         }
 
 
         // 3. Fallback to mouse cursor position
         if let mouseRect = getMouseCursorRect() {
-            print("[AX] Mouse cursor fallback used: \(mouseRect)")
+            CursorBounds.debugPrint("[AX] Mouse cursor fallback used: \(mouseRect)")
             return CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
         }
 
