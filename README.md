@@ -75,7 +75,7 @@ The **Capture Timer** tab records cursor positions at a configurable interval, u
 
 ### Smart Positioning Example (Popup)
 
-CursorPlayground also features a pop example, while the app is running, pressing the configured keyboard shortcut will display a popup using the smart positioning method (see [Smart Positioning](https://github.com/Aeastr/CursorBounds/wiki/CursorBounds-API)). You can customize the keyboard shortcut in the Popup settings tab.
+CursorPlayground also features a pop example, while the app is running, pressing the configured keyboard shortcut will display a popup using the smart positioning method (see [Smart Positioning](https://github.com/Aeastr/CursorBounds/wiki/CursorBounds-API#smartpositionforpreferredpositionmargincorrectionmodecorner)). You can customize the keyboard shortcut in the Popup settings tab.
 
 ---
 
@@ -85,7 +85,7 @@ This project is released under the MIT License. See [LICENSE](LICENSE.md) for de
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request!
+Contributions are welcome! Please feel free to submit a Pull Request! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Support
 

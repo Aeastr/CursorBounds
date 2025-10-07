@@ -1,6 +1,6 @@
 {
   "fill" : {
-    "automatic-gradient" : "display-p3:0.50000,0.85337,0.66260,1.00000"
+    "automatic-gradient" : "display-p3:0.04001,0.67324,0.38536,1.00000"
   },
   "groups" : [
     {
@@ -25,7 +25,7 @@
       "position" : {
         "scale" : 1,
         "translation-in-points" : [
-          20,
+          1,
           0
         ]
       },
@@ -40,7 +40,7 @@
       }
     },
     {
-      "blur-material" : null,
+      "blur-material" : 0.5,
       "layers" : [
         {
           "blend-mode" : "normal",
@@ -58,15 +58,37 @@
               -10
             ]
           }
-        },
+        }
+      ],
+      "lighting" : "individual",
+      "name" : "Group",
+      "position" : {
+        "scale" : 1,
+        "translation-in-points" : [
+          7,
+          0
+        ]
+      },
+      "shadow" : {
+        "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "blur-material" : 0.1,
+      "layers" : [
         {
           "fill" : {
             "solid" : "srgb:1.00000,1.00000,1.00000,1.00000"
           },
-          "glass" : false,
+          "glass" : true,
           "image-name" : "rect.svg",
           "name" : "rect",
-          "opacity" : 0.4,
+          "opacity" : 1,
           "position" : {
             "scale" : 1.32,
             "translation-in-points" : [
@@ -77,15 +99,44 @@
         }
       ],
       "lighting" : "individual",
+      "opacity" : 0.4,
       "position" : {
         "scale" : 1,
         "translation-in-points" : [
-          20,
+          7,
           0
         ]
       },
       "shadow" : {
         "kind" : "layer-color",
+        "opacity" : 0.5
+      },
+      "specular" : false,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "fill" : {
+            "solid" : "extended-gray:1.00000,1.00000"
+          },
+          "image-name" : "Grid.png",
+          "name" : "Grid",
+          "opacity" : 0.2,
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
         "opacity" : 0.5
       },
       "translucency" : {
