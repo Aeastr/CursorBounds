@@ -28,6 +28,13 @@ import AppKit
 /// ```
 public class CursorMonitor {
     
+    // MARK: - Debug Configuration
+    
+    /// Enable or disable debug logging for cursor detection. Default is `false`.
+    /// When enabled, prints detailed information about cursor position resolution,
+    /// detection methods, and any issues encountered.
+    public static var isDebugEnabled: Bool = false
+    
     // MARK: - Configuration
     
     /// How frequently to check cursor position (in seconds)

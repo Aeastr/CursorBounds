@@ -25,6 +25,13 @@ public class CursorBounds {
     static let shared = CursorBounds.init()
     public init() {}
     
+    /// Internal debug print function that only prints when debug mode is enabled
+    internal static func debugPrint(_ message: String) {
+        if CursorMonitor.isDebugEnabled {
+            print(message)
+        }
+    }
+    
     // MARK: - Primary Methods
     
     /// Gets the current cursor position and bounds information
@@ -68,7 +75,7 @@ public class CursorBounds {
         let searchPoint = cursorPositionResult.bounds.origin
         let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(searchPoint) })
         guard let screen else {
-            print("[CursorBounds] Screen not found for point \(cursorPositionResult.bounds.origin)")
+            Self.debugPrint("[CursorBounds] Screen not found for point \(cursorPositionResult.bounds.origin)")
             throw CursorBoundsError.screenNotFound
         }
         
