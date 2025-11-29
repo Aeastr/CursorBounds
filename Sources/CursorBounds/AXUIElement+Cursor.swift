@@ -17,24 +17,18 @@ internal extension AXUIElement {
     /// - Returns: `cursorPositionResult` representing the bounding rectangle and type
     ///
     func resolveCursorPosition() -> CursorPositionResult? {
-        print("[AX] resolveCursorPosition start for element \(self)")
-
         // 1. Attempt to get caret bounds (skip if zero-sized)
         if let caretBounds = getCaretBounds(), caretBounds.width > 0 || caretBounds.height > 0 {
-            print("[AX] Caret bounds detected: \(caretBounds)")
             return CursorPositionResult(type: .caret, bounds: caretBounds)
         }
 
         // 2. Attempt to get caret rect
         if let caretRect = getCaretRect() {
-            print("[AX] Caret rect fallback used: \(caretRect)")
             return CursorPositionResult(type: .rect, bounds: caretRect)
         }
 
-
         // 3. Fallback to mouse cursor position
         if let mouseRect = getMouseCursorRect() {
-            print("[AX] Mouse cursor fallback used: \(mouseRect)")
             return CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
         }
 
@@ -316,35 +310,64 @@ func getFocusedElement() -> AXUIElement? {
     guard AXIsProcessTrusted() else {
         return nil
     }
-    
+
     let systemWideElement = AXUIElementCreateSystemWide()
-    
+
     var appRef: CFTypeRef?
     let resultApp = AXUIElementCopyAttributeValue(
         systemWideElement,
         kAXFocusedApplicationAttribute as CFString,
         &appRef
     )
-    
-    
+
+
     guard resultApp == .success,
           let app = castCF(appRef, to: AXUIElement.self) else {
         return nil
     }
-    
-    
+
+
     var focusedElementRef: CFTypeRef?
     let resultElement = AXUIElementCopyAttributeValue(
         app,
         kAXFocusedUIElementAttribute as CFString,
         &focusedElementRef
     )
-    
-    
+
+
     guard resultElement == .success,
           let focused = castCF(focusedElementRef, to: AXUIElement.self) else {
         return nil
     }
-    
+
+    return focused
+}
+
+/// Retrieves the focused `AXUIElement` from a specific application by process ID.
+///
+/// Use this when you need to get the cursor position from an app that is not currently
+/// the frontmost application (e.g., when your popup panel has taken focus).
+///
+/// - Parameter pid: The process ID of the target application
+/// - Returns: The focused `AXUIElement` within that app, or `nil` if unavailable.
+func getFocusedElement(forPID pid: pid_t) -> AXUIElement? {
+    guard AXIsProcessTrusted() else {
+        return nil
+    }
+
+    let appElement = AXUIElementCreateApplication(pid)
+
+    var focusedElementRef: CFTypeRef?
+    let result = AXUIElementCopyAttributeValue(
+        appElement,
+        kAXFocusedUIElementAttribute as CFString,
+        &focusedElementRef
+    )
+
+    guard result == .success,
+          let focused = castCF(focusedElementRef, to: AXUIElement.self) else {
+        return nil
+    }
+
     return focused
 }

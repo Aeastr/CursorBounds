@@ -68,7 +68,6 @@ public class CursorBounds {
         let searchPoint = cursorPositionResult.bounds.origin
         let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(searchPoint) })
         guard let screen else {
-            print("[CursorBounds] Screen not found for point \(cursorPositionResult.bounds.origin)")
             throw CursorBoundsError.screenNotFound
         }
         
@@ -117,6 +116,88 @@ public class CursorBounds {
         return CursorPosition(point: point, type: cursorType, bounds: cursorPositionResult.bounds, screen: screen)
     }
     
+    /// Gets the cursor position from a specific application by process ID
+    ///
+    /// Use this when your app has taken focus (e.g., showing a panel) but you need to track
+    /// the cursor in another application that was previously focused.
+    ///
+    /// - Parameters:
+    ///   - pid: The process ID of the target application
+    ///   - correctionMode: How to handle coordinate system differences
+    ///   - corner: Which corner of the cursor's bounding rectangle to use
+    /// - Returns: Complete cursor position information
+    /// - Throws: `CursorBoundsError` if cursor position cannot be determined
+    public func cursorPosition(
+        forPID pid: pid_t,
+        correctionMode: ScreenCorrectionMode = .adjustForYAxis,
+        corner: BoundsCorner = .topLeft
+    ) throws -> CursorPosition {
+        guard Self.isAccessibilityEnabled() else {
+            throw CursorBoundsError.accessibilityPermissionDenied
+        }
+
+        // Get focused element from the specific app
+        let focusedElement = getFocusedElement(forPID: pid)
+
+        var cursorPositionResult: CursorPositionResult
+        if let focusedElement,
+           let resolved = focusedElement.resolveCursorPosition() {
+            cursorPositionResult = resolved
+        } else {
+            // Use mouse fallback
+            let mouseRect = CGRect(origin: NSEvent.mouseLocation, size: .zero)
+            cursorPositionResult = CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
+        }
+
+        // Find which screen contains the cursor
+        let searchPoint = cursorPositionResult.bounds.origin
+        let screen = NSScreen.screens.first(where: { $0.frame.insetBy(dx: -1, dy: -1).contains(searchPoint) })
+        guard let screen else {
+            throw CursorBoundsError.screenNotFound
+        }
+
+        // Get coordinates based on the specified corner
+        let xCoordinate: CGFloat
+        switch corner.x {
+        case .minX:
+            xCoordinate = cursorPositionResult.bounds.minX
+        case .maxX:
+            xCoordinate = cursorPositionResult.bounds.maxX
+        }
+
+        let yCoordinate: CGFloat
+        switch corner.y {
+        case .minY:
+            yCoordinate = cursorPositionResult.bounds.minY
+        case .maxY:
+            yCoordinate = cursorPositionResult.bounds.maxY
+        }
+
+        // Apply Y-axis correction if necessary
+        let correctedY: CGFloat
+        switch correctionMode {
+        case .none:
+            correctedY = yCoordinate
+        case .adjustForYAxis:
+            correctedY = screen.frame.maxY - yCoordinate
+        }
+
+        // Convert OriginType to CursorType
+        let cursorType: CursorType
+        switch cursorPositionResult.type {
+        case .caret:
+            cursorType = .textCaret
+        case .rect:
+            cursorType = .textField
+        case .mouseCursor:
+            cursorType = .mouseFallback
+        }
+
+        let point = NSPoint(x: xCoordinate, y: correctedY)
+
+        return CursorPosition(point: point, type: cursorType, bounds: cursorPositionResult.bounds, screen: screen)
+    }
+
     /// Gets just the cursor point (convenience method)
     /// - Parameter correctionMode: How to handle screen coordinate correction
     /// - Returns: The cursor position as an NSPoint
