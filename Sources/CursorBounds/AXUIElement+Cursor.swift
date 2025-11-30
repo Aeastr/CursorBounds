@@ -13,25 +13,38 @@ import Accessibility
 
 internal extension AXUIElement {
     /// Attempts to return the bounding rect of the insertion point (cursor) in the current text area.
-    /// Fallback order: Caret Bounds → Caret Rect → Mouse Cursor Rect.
+    /// Tries sources in the specified priority order, or uses default order if not specified.
+    /// - Parameter priority: Optional array of cursor types to try in order. If nil, uses default order.
     /// - Returns: `cursorPositionResult` representing the bounding rectangle and type
     ///
-    func resolveCursorPosition() -> CursorPositionResult? {
-        // 1. Attempt to get caret bounds (skip if zero-sized)
-        if let caretBounds = getCaretBounds(), caretBounds.width > 0 || caretBounds.height > 0 {
-            return CursorPositionResult(type: .caret, bounds: caretBounds)
+    func resolveCursorPosition(priority: [CursorType]? = nil) -> CursorPositionResult? {
+        let order = priority ?? [.textCaret, .textField, .mouseFallback]
+
+        for sourceType in order {
+            if let result = trySource(sourceType) {
+                return result
+            }
         }
 
-        // 2. Attempt to get caret rect
-        if let caretRect = getCaretRect() {
-            return CursorPositionResult(type: .rect, bounds: caretRect)
-        }
+        return nil
+    }
 
-        // 3. Fallback to mouse cursor position
-        if let mouseRect = getMouseCursorRect() {
-            return CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
+    /// Attempts to get cursor position from a specific source type
+    private func trySource(_ type: CursorType) -> CursorPositionResult? {
+        switch type {
+        case .textCaret:
+            if let caretBounds = getCaretBounds(), caretBounds.width > 0 || caretBounds.height > 0 {
+                return CursorPositionResult(type: .caret, bounds: caretBounds)
+            }
+        case .textField:
+            if let caretRect = getCaretRect() {
+                return CursorPositionResult(type: .rect, bounds: caretRect)
+            }
+        case .mouseFallback:
+            if let mouseRect = getMouseCursorRect() {
+                return CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
+            }
         }
-
         return nil
     }
     

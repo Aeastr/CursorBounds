@@ -13,8 +13,8 @@ public enum CursorBoundsError: Error, LocalizedError {
     case noFocusedElement
     case cursorPositionUnavailable
     case screenNotFound
-    case sourceNotAllowed(detected: CursorType, allowed: Set<CursorType>)
-    
+    case noSourceAvailable(tried: [CursorType])
+
     public var errorDescription: String? {
         switch self {
         case .accessibilityPermissionDenied:
@@ -25,11 +25,11 @@ public enum CursorBoundsError: Error, LocalizedError {
             return "Unable to determine cursor position using any available method"
         case .screenNotFound:
             return "No screen found containing the cursor bounds"
-        case .sourceNotAllowed(let detected, _):
-            return "Detected cursor source '\(detected.rawValue)' is not in the allowed sources"
+        case .noSourceAvailable:
+            return "No cursor source was able to provide a position"
         }
     }
-    
+
     public var failureReason: String? {
         switch self {
         case .accessibilityPermissionDenied:
@@ -40,12 +40,12 @@ public enum CursorBoundsError: Error, LocalizedError {
             return "All cursor detection methods (caret, text field, mouse fallback) failed"
         case .screenNotFound:
             return "The cursor position is outside the bounds of all available screens"
-        case .sourceNotAllowed(let detected, let allowed):
-            let allowedNames = allowed.map { $0.rawValue }.joined(separator: ", ")
-            return "Detected '\(detected.rawValue)' but only [\(allowedNames)] are allowed"
+        case .noSourceAvailable(let tried):
+            let triedNames = tried.map { $0.rawValue }.joined(separator: ", ")
+            return "Tried sources [\(triedNames)] but none succeeded"
         }
     }
-    
+
     public var recoverySuggestion: String? {
         switch self {
         case .accessibilityPermissionDenied:
@@ -56,8 +56,8 @@ public enum CursorBoundsError: Error, LocalizedError {
             return "Ensure a text field is focused and accessibility permissions are granted"
         case .screenNotFound:
             return "Ensure the cursor is within the visible screen area"
-        case .sourceNotAllowed:
-            return "Focus a text field for caret detection, or update allowed sources to include the detected type"
+        case .noSourceAvailable:
+            return "Focus a text field for caret detection, or include mouseFallback in sourcePriority"
         }
     }
 }

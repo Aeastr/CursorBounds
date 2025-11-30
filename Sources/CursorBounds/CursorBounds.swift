@@ -40,14 +40,14 @@ public class CursorBounds {
     ///     for flipped coordinates compatible with iOS-style views, or `.none` for raw macOS coordinates.
     ///   - corner: Which corner of the cursor's bounding rectangle to use for positioning.
     ///     Defaults to `.topLeft` for most intuitive behavior.
-    ///   - allowedSources: Optional set of cursor types to accept. If the detected source is not in this set,
-    ///     throws `.sourceNotAllowed`. Pass `nil` (default) to accept all sources.
+    ///   - sourcePriority: Optional array of cursor types to try in order. Only these sources will be used,
+    ///     and they will be tried in the specified order. Pass `nil` (default) to use all sources in default order.
     /// - Returns: Complete cursor position information including the final calculated point
     /// - Throws: `CursorBoundsError` if cursor position cannot be determined
     public func cursorPosition(
         correctionMode: ScreenCorrectionMode = .adjustForYAxis,
         corner: BoundsCorner = .topLeft,
-        allowedSources: Set<CursorType>? = nil
+        sourcePriority: [CursorType]? = nil
     ) throws -> CursorPosition {
         // Check accessibility permissions first
         guard Self.isAccessibilityEnabled() else {
@@ -56,15 +56,23 @@ public class CursorBounds {
         
         // Get focused element and resolve cursor position
         let focusedElement = getFocusedElement()
-        
-        var cursorPositionResult: CursorPositionResult
-        if let focusedElement,
-           let resolved = focusedElement.resolveCursorPosition() {
-            cursorPositionResult = resolved
-        } else {
-            // Use mouse fallback
-            let mouseRect = CGRect(origin: NSEvent.mouseLocation, size: .zero)
-            cursorPositionResult = CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
+
+        var cursorPositionResult: CursorPositionResult?
+        if let focusedElement {
+            cursorPositionResult = focusedElement.resolveCursorPosition(priority: sourcePriority)
+        }
+
+        // If no result from focused element, try mouse fallback if allowed
+        if cursorPositionResult == nil {
+            let allowsMouse = sourcePriority == nil || sourcePriority!.contains(.mouseFallback)
+            if allowsMouse {
+                let mouseRect = CGRect(origin: NSEvent.mouseLocation, size: .zero)
+                cursorPositionResult = CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
+            }
+        }
+
+        guard let cursorPositionResult else {
+            throw CursorBoundsError.noSourceAvailable(tried: sourcePriority ?? CursorType.allCases)
         }
         
         // Find which screen contains the cursor
@@ -114,11 +122,6 @@ public class CursorBounds {
             cursorType = .mouseFallback
         }
 
-        // Check if detected source is allowed
-        if let allowedSources, !allowedSources.contains(cursorType) {
-            throw CursorBoundsError.sourceNotAllowed(detected: cursorType, allowed: allowedSources)
-        }
-
         let point = NSPoint(x: xCoordinate, y: correctedY)
 
         return CursorPosition(point: point, type: cursorType, bounds: cursorPositionResult.bounds, screen: screen)
@@ -133,15 +136,15 @@ public class CursorBounds {
     ///   - pid: The process ID of the target application
     ///   - correctionMode: How to handle coordinate system differences
     ///   - corner: Which corner of the cursor's bounding rectangle to use
-    ///   - allowedSources: Optional set of cursor types to accept. If the detected source is not in this set,
-    ///     throws `.sourceNotAllowed`. Pass `nil` (default) to accept all sources.
+    ///   - sourcePriority: Optional array of cursor types to try in order. Only these sources will be used,
+    ///     and they will be tried in the specified order. Pass `nil` (default) to use all sources in default order.
     /// - Returns: Complete cursor position information
     /// - Throws: `CursorBoundsError` if cursor position cannot be determined
     public func cursorPosition(
         forPID pid: pid_t,
         correctionMode: ScreenCorrectionMode = .adjustForYAxis,
         corner: BoundsCorner = .topLeft,
-        allowedSources: Set<CursorType>? = nil
+        sourcePriority: [CursorType]? = nil
     ) throws -> CursorPosition {
         guard Self.isAccessibilityEnabled() else {
             throw CursorBoundsError.accessibilityPermissionDenied
@@ -150,14 +153,22 @@ public class CursorBounds {
         // Get focused element from the specific app
         let focusedElement = getFocusedElement(forPID: pid)
 
-        var cursorPositionResult: CursorPositionResult
-        if let focusedElement,
-           let resolved = focusedElement.resolveCursorPosition() {
-            cursorPositionResult = resolved
-        } else {
-            // Use mouse fallback
-            let mouseRect = CGRect(origin: NSEvent.mouseLocation, size: .zero)
-            cursorPositionResult = CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
+        var cursorPositionResult: CursorPositionResult?
+        if let focusedElement {
+            cursorPositionResult = focusedElement.resolveCursorPosition(priority: sourcePriority)
+        }
+
+        // If no result from focused element, try mouse fallback if allowed
+        if cursorPositionResult == nil {
+            let allowsMouse = sourcePriority == nil || sourcePriority!.contains(.mouseFallback)
+            if allowsMouse {
+                let mouseRect = CGRect(origin: NSEvent.mouseLocation, size: .zero)
+                cursorPositionResult = CursorPositionResult(type: .mouseCursor, bounds: mouseRect)
+            }
+        }
+
+        guard let cursorPositionResult else {
+            throw CursorBoundsError.noSourceAvailable(tried: sourcePriority ?? CursorType.allCases)
         }
 
         // Find which screen contains the cursor
@@ -202,11 +213,6 @@ public class CursorBounds {
             cursorType = .textField
         case .mouseCursor:
             cursorType = .mouseFallback
-        }
-
-        // Check if detected source is allowed
-        if let allowedSources, !allowedSources.contains(cursorType) {
-            throw CursorBoundsError.sourceNotAllowed(detected: cursorType, allowed: allowedSources)
         }
 
         let point = NSPoint(x: xCoordinate, y: correctedY)
