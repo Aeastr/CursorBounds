@@ -268,17 +268,18 @@ struct PermissionTips: View {
 struct CurrentOriginView: View {
     @Binding var currentPosition: CursorPosition?
     var onRefresh: () -> Void
-    
+
     @State private var monitor = CursorMonitor()
     @State private var isMonitoring = false
     @State private var pollingInterval: Double = 0.1
     @State private var changeThreshold: CGFloat = 2.0
-    
+
     // Alert states for direct input
     @State private var showPollingAlert = false
     @State private var showThresholdAlert = false
     @State private var pollingInputText = ""
     @State private var thresholdInputText = ""
+
     
     var body: some View {
         HStack(alignment: .top, spacing: 20) {
@@ -327,6 +328,7 @@ struct CurrentOriginView: View {
                             .buttonStyle(.plain)
                         }
                     }
+
                 }
             }
             .frame(maxWidth: 240)

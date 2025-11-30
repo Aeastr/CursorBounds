@@ -40,11 +40,14 @@ public class CursorBounds {
     ///     for flipped coordinates compatible with iOS-style views, or `.none` for raw macOS coordinates.
     ///   - corner: Which corner of the cursor's bounding rectangle to use for positioning.
     ///     Defaults to `.topLeft` for most intuitive behavior.
+    ///   - allowedSources: Optional set of cursor types to accept. If the detected source is not in this set,
+    ///     throws `.sourceNotAllowed`. Pass `nil` (default) to accept all sources.
     /// - Returns: Complete cursor position information including the final calculated point
     /// - Throws: `CursorBoundsError` if cursor position cannot be determined
     public func cursorPosition(
         correctionMode: ScreenCorrectionMode = .adjustForYAxis,
-        corner: BoundsCorner = .topLeft
+        corner: BoundsCorner = .topLeft,
+        allowedSources: Set<CursorType>? = nil
     ) throws -> CursorPosition {
         // Check accessibility permissions first
         guard Self.isAccessibilityEnabled() else {
@@ -110,12 +113,17 @@ public class CursorBounds {
         case .mouseCursor:
             cursorType = .mouseFallback
         }
-        
+
+        // Check if detected source is allowed
+        if let allowedSources, !allowedSources.contains(cursorType) {
+            throw CursorBoundsError.sourceNotAllowed(detected: cursorType, allowed: allowedSources)
+        }
+
         let point = NSPoint(x: xCoordinate, y: correctedY)
-        
+
         return CursorPosition(point: point, type: cursorType, bounds: cursorPositionResult.bounds, screen: screen)
     }
-    
+
     /// Gets the cursor position from a specific application by process ID
     ///
     /// Use this when your app has taken focus (e.g., showing a panel) but you need to track
@@ -125,12 +133,15 @@ public class CursorBounds {
     ///   - pid: The process ID of the target application
     ///   - correctionMode: How to handle coordinate system differences
     ///   - corner: Which corner of the cursor's bounding rectangle to use
+    ///   - allowedSources: Optional set of cursor types to accept. If the detected source is not in this set,
+    ///     throws `.sourceNotAllowed`. Pass `nil` (default) to accept all sources.
     /// - Returns: Complete cursor position information
     /// - Throws: `CursorBoundsError` if cursor position cannot be determined
     public func cursorPosition(
         forPID pid: pid_t,
         correctionMode: ScreenCorrectionMode = .adjustForYAxis,
-        corner: BoundsCorner = .topLeft
+        corner: BoundsCorner = .topLeft,
+        allowedSources: Set<CursorType>? = nil
     ) throws -> CursorPosition {
         guard Self.isAccessibilityEnabled() else {
             throw CursorBoundsError.accessibilityPermissionDenied
@@ -191,6 +202,11 @@ public class CursorBounds {
             cursorType = .textField
         case .mouseCursor:
             cursorType = .mouseFallback
+        }
+
+        // Check if detected source is allowed
+        if let allowedSources, !allowedSources.contains(cursorType) {
+            throw CursorBoundsError.sourceNotAllowed(detected: cursorType, allowed: allowedSources)
         }
 
         let point = NSPoint(x: xCoordinate, y: correctedY)

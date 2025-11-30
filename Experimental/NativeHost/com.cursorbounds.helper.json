@@ -1,0 +1,9 @@
+{
+  "name": "com.cursorbounds.helper",
+  "description": "CursorBounds Native Messaging Host",
+  "path": "/usr/local/bin/CursorBoundsHost",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://EXTENSION_ID_HERE/"
+  ]
+}
