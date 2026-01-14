@@ -1,105 +1,128 @@
 <div align="center">
-  <img width="270" height="270" src="/assets/icon.png" alt="Ibeam selecting text 'relia' against a mint green background">
+  <img width="128" height="128" src="/resources/icons/icon.png" alt="CursorBounds Icon">
   <h1><b>CursorBounds</b></h1>
-  <p>A Swift package for macOS that provides precise cursor positioning and contextual information about focused applications and windows.</p>
+  <p>
+    Precise cursor positioning and contextual information for macOS applications.
+  </p>
 </div>
 
-<div align="center">
-  <a href="https://swift.org">
-    <img src="https://img.shields.io/badge/Swift-5.5-orange.svg" alt="Swift Version">
-  </a>
-  <a href="https://www.apple.com/ios/">
-    <img src="https://img.shields.io/badge/macOS-12.0%2B-blue.svg" alt="macOS 12.0+">
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT">
-  </a>
-</div>
+<p align="center">
+  <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-5.5+-F05138?logo=swift&logoColor=white" alt="Swift 5.5+"></a>
+  <a href="https://developer.apple.com"><img src="https://img.shields.io/badge/macOS-12+-000000?logo=apple" alt="macOS 12+"></a>
+</p>
 
----
 
-## **What is CursorBounds?**
+## Overview
 
-CursorBounds is a comprehensive Swift package that gives you precise information about:
-- **Where the text cursor is** - Position, and bounds of the text caret, text field, or mouse cursor
-- **What app is focused** - Identify the current application and window
-- **Browser context** - Extract URLs, domains, and page titles from web browsers
-- **Smart positioning** - Calculate optimal popup and overlay positions based on cursor position and size
+- **Cursor positioning** - Get precise caret position, text field bounds, or mouse cursor location
+- **App context** - Identify focused application and window
+- **Browser intelligence** - Extract URLs, domains, and page titles (18+ browsers)
+- **Smart positioning** - Calculate optimal popup/overlay placement
 
-## **Core Components**
-
-### 🎯 **CursorBounds** - Precise Positioning
-Get exact cursor coordinates with intelligent fallback:
-
-| ![Cursor Caret](assets/caretExample.png) | ![Text Field](assets/textAreaExample.png) | ![Mouse Fallback](assets/fallbackExample.png) |
+| ![Cursor Caret](/resources/examples/caretExample.png) | ![Text Field](/resources/examples/textAreaExample.png) | ![Mouse Fallback](/resources/examples/fallbackExample.png) |
 |:---:|:---:|:---:|
-| **Text Caret** | **Text Field Bounds** | **Mouse Cursor** |
-| Precise blinking cursor position | Focused text area rectangle | Screen cursor as fallback |
+| Text Caret | Text Field Bounds | Mouse Fallback |
 
-### 🌐 **CursorContext** - App & Browser Intelligence
-Understand what the user is doing:
-- Detect focused applications and windows
-- Extract website URLs and domains from browsers
-- Identify search fields and page titles
-- Configurable browser detection (18+ browsers supported)
 
-## **Documentation**
+## Requirements
 
-**📖 [Complete Documentation](https://github.com/Aeastr/CursorBounds/wiki)** available in the CursorBounds Wiki
+| Requirement | Description |
+|-------------|-------------|
+| **Accessibility Permissions** | Required. System will prompt users to grant access. |
+| **App Sandbox** | Optional for internal use. Must be disabled to track cursors in other apps. |
 
-## **Requirements Notice**
 
-| Requirement | Status | Description |
-|-------------|--------|-------------|
-| **Accessibility Permissions** | **🔴 Required** | Must be granted to use this package. The system will prompt users to grant these permissions. |
-| **App Sandbox (Internal Use)** | **🟢 Optional** | Can remain enabled when tracking cursors within your own application. |
-| **App Sandbox (External Use)** | **🚨 Must be disabled** | Required only if you need to track cursors in ***other*** applications (external apps). |
+## Installation
 
----
+```swift
+dependencies: [
+    .package(url: "https://github.com/aeastr/CursorBounds.git", from: "1.0.0")
+]
+```
 
-## Playground Demos
+```swift
+import CursorBounds
+```
 
-CursorBounds comes with a bundled demo app that lets you explore CursorBounds in action. Open the Xcode workspace, select the `CursorPlayground` target, and press **Run** to try it out.
 
-### Current Origin Example
+## Usage
 
-![Current Origin Demo](assets/Playground%20CurrentOrigin.png)
+### Check Permissions
 
-The **Current Origin** tab continuously displays the live caret position (or the best fallback) and lets you monitor changes in real-time.
+```swift
+if CursorBounds.isAccessibilityEnabled() {
+    // Ready to use
+} else {
+    CursorBounds.requestAccessibilityPermissions()
+}
+```
 
-### Capture Timer Example
+### Get Cursor Position
 
-![Capture Timer Demo](assets/Playground%20CaptureTimer.png)
+```swift
+// Get current cursor origin (caret → text field → mouse fallback)
+let origin = CursorBounds.currentOrigin()
 
-The **Capture Timer** tab records cursor positions at a configurable interval, useful for sampling cursor movement over time.
+// Get specific bounds
+let caretBounds = CursorBounds.caretBounds()
+let fieldBounds = CursorBounds.textFieldBounds()
+let mouseBounds = CursorBounds.mouseBounds()
+```
 
-### Smart Positioning Example (Popup)
+### Smart Popup Positioning
 
-CursorPlayground also features a pop example, while the app is running, pressing the configured keyboard shortcut will display a popup using the smart positioning method (see [Smart Positioning](https://github.com/Aeastr/CursorBounds/wiki/CursorBounds-API#smartpositionforpreferredpositionmargincorrectionmodecorner)). You can customize the keyboard shortcut in the Popup settings tab.
+```swift
+let popupFrame = CursorBounds.smartPosition(
+    for: popupSize,
+    preferredPosition: .below,
+    margin: 8
+)
+```
 
----
+### App & Browser Context
 
-## License
+```swift
+let context = CursorContext()
 
-This project is released under the MIT License. See [LICENSE](LICENSE.md) for details.
+// Focused app info
+context.appName        // "Safari"
+context.bundleID       // "com.apple.Safari"
+context.windowTitle    // "GitHub - Aeastr/CursorBounds"
+
+// Browser-specific
+context.currentURL     // "https://github.com/Aeastr/CursorBounds"
+context.currentDomain  // "github.com"
+context.isSearchField  // true/false
+```
+
+### Monitor Cursor Changes
+
+```swift
+let monitor = CursorMonitor()
+monitor.startMonitoring { bounds in
+    print("Cursor moved to: \(bounds.origin)")
+}
+```
+
+> See [docs/](docs/) for complete API documentation.
+
+
+## Demo App
+
+The included `CursorPlayground` app demonstrates all features:
+
+| ![Current Origin](/resources/screenshots/Playground%20CurrentOrigin.png) | ![Capture Timer](/resources/screenshots/Playground%20CaptureTimer.png) |
+|:---:|:---:|
+| Live cursor tracking | Interval-based sampling |
+
+Open the Xcode workspace, select `CursorPlayground`, and run.
+
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## Support
 
-If you like this project, please consider giving it a ⭐️
+## License
 
----
-
-## Where to find me:  
-- here, obviously.  
-- [Twitter](https://x.com/AetherAurelia)  
-- [Threads](https://www.threads.net/@aetheraurelia)  
-- [Bluesky](https://bsky.app/profile/aethers.world)  
-- [LinkedIn](https://www.linkedin.com/in/willjones24)
-
----
-
-<p align="center">Built with 🍏🖱️🔲 by Aether</p>
+MIT. See [LICENSE](LICENSE) for details.
